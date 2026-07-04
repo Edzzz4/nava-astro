@@ -1,0 +1,61 @@
+# Nava — Netlify configuration.
+# Security headers live in public/_headers (copied into dist/ by Astro).
+# DNS is already configured for navaeditore.com — nothing to change there.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# ── Redirects ──
+# Root → default language. `301!` forces the redirect even though
+# dist/index.html exists (that file is only a fallback for non-Netlify hosts).
+[[redirects]]
+  from = "/"
+  to = "/it/"
+  status = 301
+  force = true
+
+# www → apex (matches the canonical URLs). HTTPS is enforced by Netlify
+# automatically when a certificate is active; these also catch http://www.
+[[redirects]]
+  from = "https://www.navaeditore.com/*"
+  to = "https://navaeditore.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.navaeditore.com/*"
+  to = "https://navaeditore.com/:splat"
+  status = 301
+  force = true
+
+# Old flat .html URLs from the previous static site → new localized routes.
+[[redirects]]
+  from = "/index.html"
+  to = "/it/"
+  status = 301
+
+[[redirects]]
+  from = "/catalogo.html"
+  to = "/it/catalogo/"
+  status = 301
+
+[[redirects]]
+  from = "/chi-siamo.html"
+  to = "/it/chi-siamo/"
+  status = 301
+
+[[redirects]]
+  from = "/contatti.html"
+  to = "/it/contatti/"
+  status = 301
+
+[[redirects]]
+  from = "/libro.html"
+  to = "/it/catalogo/"
+  status = 301
+
+# Custom 404: Netlify automatically serves dist/404.html for misses.

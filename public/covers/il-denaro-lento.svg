@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" role="img" aria-label="Cover of Il Denaro Lento">
+  <rect width="600" height="800" fill="#34495A"/>
+  <rect x="28" y="28" width="544" height="744" fill="none" stroke="#AFC2CF" stroke-width="1.5" opacity="0.55"/>
+  <text x="300" y="92" fill="#AFC2CF" font-family="Georgia, serif" font-size="20" letter-spacing="6" text-anchor="middle" opacity="0.85">N A V A</text>
+  <line x1="240" y1="312" x2="360" y2="312" stroke="#AFC2CF" stroke-width="1" opacity="0.6"/>
+  <text x="300" y="392" fill="#EEF3F6" font-family="Georgia, serif" font-style="italic" font-size="48" text-anchor="middle">Il Denaro</text>
+  <text x="300" y="452" fill="#EEF3F6" font-family="Georgia, serif" font-style="italic" font-size="48" text-anchor="middle">Lento</text>
+  <line x1="240" y1="500" x2="360" y2="500" stroke="#AFC2CF" stroke-width="1" opacity="0.6"/>
+  <text x="300" y="720" fill="#AFC2CF" font-family="Georgia, serif" font-size="22" letter-spacing="3" text-anchor="middle">Anna Greco</text>
+</svg>

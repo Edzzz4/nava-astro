@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://navaeditore.com/sitemap-index.xml

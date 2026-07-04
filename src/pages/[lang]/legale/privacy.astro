@@ -1,0 +1,45 @@
+---
+/** Privacy policy — structural placeholder, NOT legal advice. */
+import Legal from '../../../layouts/Legal.astro';
+import { LANGUAGES, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Lang;
+---
+
+<Legal {lang} title="Privacy Policy" description="Informativa sul trattamento dei dati personali di Nava.">
+  <h2>1. Titolare del trattamento</h2>
+  <p>
+    Il titolare del trattamento è [TODO: ragione sociale], con sede in [TODO: indirizzo],
+    P.IVA [TODO: P.IVA], email <a href="mailto:info@navaeditore.com">info@navaeditore.com</a>.
+  </p>
+
+  <h2>2. Dati trattati</h2>
+  <p>
+    Il sito è statico e non utilizza cookie di profilazione né strumenti di analytics.
+    I dati personali trattati sono esclusivamente quelli forniti volontariamente tramite
+    il modulo di contatto o via email: nome, indirizzo email e contenuto del messaggio.
+  </p>
+  <!-- NOTA: se in futuro si aggiunge analytics o qualunque cookie non tecnico,
+       serve un banner di consenso GDPR e questa informativa va aggiornata. -->
+
+  <h2>3. Finalità e base giuridica</h2>
+  <p>
+    I dati sono trattati per rispondere alle richieste ricevute (art. 6.1.b GDPR) e per
+    l'invio della newsletter, previo consenso esplicito (art. 6.1.a GDPR). [TODO: verificare
+    con un consulente le finalità effettive.]
+  </p>
+
+  <h2>4. Conservazione</h2>
+  <p>[TODO: indicare i tempi di conservazione dei dati.]</p>
+
+  <h2>5. Diritti dell'interessato</h2>
+  <p>
+    In ogni momento è possibile esercitare i diritti di cui agli artt. 15-22 GDPR (accesso,
+    rettifica, cancellazione, limitazione, portabilità, opposizione) scrivendo a
+    <a href="mailto:info@navaeditore.com">info@navaeditore.com</a>. È inoltre possibile
+    proporre reclamo al Garante per la protezione dei dati personali.
+  </p>
+</Legal>

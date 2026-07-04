@@ -1,0 +1,66 @@
+---
+/**
+ * Catalog / featured book card.
+ * Carries data-* attributes read by the client-side catalog island
+ * (filter + search + sort). Fully rendered at build: with JS off the
+ * whole catalog is simply shown.
+ */
+import { categoryLabel, formatPrice, type Product } from '../data/books';
+import { localePath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  product: Product;
+  lang: Lang;
+  /** Above-the-fold cards should use eager loading. */
+  eager?: boolean;
+}
+
+const { product, lang, eager = false } = Astro.props;
+const t = useTranslations(lang);
+const title = product.title[lang];
+const href = localePath(lang, `catalogo/${product.id}/`);
+---
+
+<article
+  class="book-card reveal"
+  data-card
+  data-category={product.category}
+  data-search={`${title} ${product.author}`.toLowerCase()}
+  data-price={product.price}
+  data-year={product.year}
+  data-title={title}
+>
+  <a href={href} class="card-link">
+    <img
+      src={product.cover}
+      width="600"
+      height="800"
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      class="cover"
+      alt={`${t('aria_cover_prefix')} ${title}`}
+    />
+    <h3 class="serif title">{title}</h3>
+  </a>
+  <p class="smallcaps text-muted category">{categoryLabel(product.category, lang)}</p>
+  <p class="price">{formatPrice(product.price)}</p>
+  <div class="actions">
+    <a href={product.stripeLink} class="btn btn-primary btn-sm">{t('buy_now')}</a>
+    {product.amazonLink && <a href={product.amazonLink} class="btn btn-ghost btn-sm">{t('buy_amazon')}</a>}
+  </div>
+</article>
+
+<style>
+  .book-card { display: flex; flex-direction: column; }
+  .card-link { display: block; }
+  .card-link .cover {
+    transition: transform var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
+  }
+  .card-link:hover .cover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .title { font-size: var(--text-2xl); margin-top: var(--space-4); }
+  .card-link:hover .title { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .category { font-size: var(--text-sm); margin-top: var(--space-1); }
+  .price { font-size: var(--text-lg); margin-top: var(--space-2); }
+  .actions { display: flex; gap: var(--space-3); margin-top: var(--space-4); }
+  .actions .btn { flex: 1; }
+</style>

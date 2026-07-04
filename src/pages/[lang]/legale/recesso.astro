@@ -1,0 +1,40 @@
+---
+/** Right of withdrawal (14 days, EU) — structural placeholder, NOT legal advice. */
+import Legal from '../../../layouts/Legal.astro';
+import { LANGUAGES, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Lang;
+---
+
+<Legal {lang} title="Diritto di recesso" description="Diritto di recesso di 14 giorni per gli acquisti su navaeditore.com (Direttiva UE 2011/83).">
+  <h2>1. Il diritto di recesso</h2>
+  <p>
+    Ai sensi degli artt. 52 e ss. del Codice del Consumo (in attuazione della Direttiva
+    2011/83/UE), il consumatore ha diritto di recedere dal contratto entro
+    <strong>14 giorni</strong> dalla consegna dei prodotti, senza doverne indicare il motivo.
+  </p>
+
+  <h2>2. Come esercitarlo</h2>
+  <p>
+    Il recesso si esercita inviando, entro il termine, una dichiarazione esplicita a
+    [TODO: ragione sociale], [TODO: indirizzo], oppure via email a
+    <a href="mailto:info@navaeditore.com">info@navaeditore.com</a>.
+    [TODO: valutare se allegare il modulo tipo di recesso previsto dall'Allegato I,
+    parte B, della Direttiva.]
+  </p>
+
+  <h2>3. Restituzione e rimborso</h2>
+  <p>
+    I prodotti vanno restituiti senza indebito ritardo e comunque entro 14 giorni dalla
+    comunicazione del recesso, a [TODO: indirizzo di reso]. Il rimborso, comprensivo delle
+    spese di consegna standard, avviene entro 14 giorni dal ricevimento della merce o
+    dalla prova di spedizione, con lo stesso mezzo di pagamento dell'ordine.
+    [TODO: chi sostiene i costi di reso.]
+  </p>
+
+  <h2>4. Esclusioni</h2>
+  <p>[TODO: eventuali esclusioni (es. prodotti personalizzati o sigillati aperti).]</p>
+</Legal>

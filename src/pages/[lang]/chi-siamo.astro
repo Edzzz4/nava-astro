@@ -1,0 +1,143 @@
+---
+/** About page — story, mission band, team, values. */
+import Base from '../../layouts/Base.astro';
+import { LANGUAGES, useTranslations, type Lang } from '../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+const team = [
+  { initial: 'E', name: t('ed_name'), role: t('ed_role'), bio: t('ed_bio') },
+  { initial: 'L', name: t('lu_name'), role: t('lu_role'), bio: t('lu_bio') },
+];
+const values = [
+  ['01', t('v1_h'), t('v1_p')],
+  ['02', t('v2_h'), t('v2_p')],
+  ['03', t('v3_h'), t('v3_p')],
+] as const;
+---
+
+<Base {lang} title={t('meta_about_title')} description={t('meta_about_desc')} active="about">
+  <!-- Lead -->
+  <section class="container-x lead">
+    <p class="smallcaps text-muted kicker">{t('ab_kicker')}</p>
+    <h1 class="serif lead-title">{t('ab_title')}</h1>
+    <p class="serif text-muted lead-sub"><em>{t('ab_lead')}</em></p>
+  </section>
+
+  <hr class="rule container-x" />
+
+  <!-- Story -->
+  <section class="container-x story">
+    <h2 class="serif story-h">{t('ab_story_h')}</h2>
+    <div class="prose story-body">
+      <p>{t('ab_story_p1')}</p>
+      <p>{t('ab_story_p2')}</p>
+    </div>
+  </section>
+
+  <!-- Mission band -->
+  <section class="band">
+    <div class="container-x band-inner">
+      <h2 class="serif smallcaps band-kicker">{t('ab_mission_h')}</h2>
+      <p class="serif band-text">{t('ab_mission_p')}</p>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="container-x team">
+    <div class="team-head">
+      <h2 class="serif team-h">{t('ab_team_h')}</h2>
+      <p class="text-muted">{t('ab_team_sub')}</p>
+    </div>
+
+    <div class="duo-ph text-muted" aria-hidden="true">
+      <span>[ {t('ab_team_photo_ph')} ]</span>
+    </div>
+
+    <div class="team-grid">
+      {team.map((member) => (
+        <article class="member reveal">
+          <div class="avatar serif" aria-hidden="true">{member.initial}</div>
+          <div>
+            <h3 class="serif member-name">{member.name}</h3>
+            <p class="smallcaps text-accent member-role">{member.role}</p>
+            <p class="text-muted member-bio">{member.bio}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <hr class="rule container-x" />
+
+  <!-- Values -->
+  <section class="container-x values">
+    <h2 class="serif smallcaps values-h">{t('ab_values_h')}</h2>
+    <div class="values-grid">
+      {values.map(([num, heading, text]) => (
+        <div class="reveal">
+          <span class="serif text-accent value-num">{num}</span>
+          <h3 class="serif value-h">{heading}</h3>
+          <p class="text-muted value-p">{text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lead { padding-top: var(--space-8); padding-bottom: var(--space-8); max-width: 58rem; }
+  @media (min-width: 768px) { .lead { padding-top: var(--space-9); } }
+  .kicker { font-size: var(--text-sm); margin-bottom: var(--space-4); }
+  .lead-title { font-size: var(--text-hero); line-height: 0.98; }
+  .lead-sub { font-size: var(--text-xl); margin-top: var(--space-6); max-width: 40ch; }
+
+  .story {
+    padding-top: var(--space-8); padding-bottom: var(--space-8);
+    display: grid; grid-template-columns: 1fr; gap: var(--space-6);
+  }
+  @media (min-width: 768px) { .story { grid-template-columns: 260px 1fr; gap: 4rem; padding-top: var(--space-9); padding-bottom: var(--space-9); } }
+  .story-h { font-size: var(--text-3xl); }
+  .story-body { font-size: var(--text-lg); }
+
+  .band { background: var(--band-bg); color: var(--band-fg); }
+  .band-inner { padding-top: var(--space-9); padding-bottom: var(--space-9); max-width: 60rem; margin-right: auto; }
+  .band-kicker { font-size: var(--text-sm); color: var(--band-muted); }
+  .band-text { font-size: var(--text-4xl); line-height: 1.2; margin-top: var(--space-5); color: var(--band-fg); }
+
+  .team { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+  .team-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-7);
+  }
+  .team-h { font-size: var(--text-3xl); }
+  .duo-ph {
+    aspect-ratio: 16 / 7; border: 1px dashed var(--line); border-radius: var(--radius-sm);
+    background: var(--surface); display: flex; align-items: center; justify-content: center;
+    font-size: var(--text-sm); margin-bottom: var(--space-8);
+  }
+  .team-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
+  @media (min-width: 768px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+  .member { display: flex; align-items: flex-start; gap: var(--space-5); }
+  .avatar {
+    width: 80px; height: 80px; border-radius: var(--radius-full);
+    background: var(--line); color: var(--muted); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: var(--text-3xl);
+  }
+  .member-name { font-size: var(--text-2xl); }
+  .member-role { font-size: var(--text-sm); margin-top: var(--space-1); }
+  .member-bio { margin-top: var(--space-3); max-width: 40ch; }
+
+  .values { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+  .values-h { font-size: var(--text-3xl); margin-bottom: var(--space-7); }
+  .values-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
+  @media (min-width: 768px) { .values-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-6); } }
+  .value-num { font-size: var(--text-3xl); }
+  .value-h { font-size: var(--text-2xl); margin-top: var(--space-3); }
+  .value-p { margin-top: var(--space-2); }
+</style>

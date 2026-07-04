@@ -1,0 +1,130 @@
+---
+/**
+ * Sticky top navigation + language switcher + mobile menu.
+ * The language switcher links to the SAME page in the other language
+ * (slugs are shared; only the /it/ /en/ prefix changes).
+ * The mobile toggle is wired by src/scripts/site.ts.
+ */
+import { LANGUAGES, localePath, switchLangPath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** Which item to mark as current. */
+  active?: 'home' | 'catalog' | 'about' | 'contact';
+}
+
+const { lang, active } = Astro.props;
+const t = useTranslations(lang);
+const pathname = Astro.url.pathname;
+
+const items = [
+  { key: 'home', href: localePath(lang), label: t('nav_home') },
+  { key: 'catalog', href: localePath(lang, 'catalogo/'), label: t('nav_catalog') },
+  { key: 'about', href: localePath(lang, 'chi-siamo/'), label: t('nav_about') },
+  { key: 'contact', href: localePath(lang, 'contatti/'), label: t('nav_contact') },
+] as const;
+---
+
+<nav aria-label={t('aria_main_nav')} class="site-nav">
+  <div class="container-x bar">
+    <a href={localePath(lang)} class="wordmark serif" aria-label="Nava — home">Nava</a>
+
+    <ul class="links" role="list">
+      {items.map((item) => (
+        <li>
+          <a
+            class="nav-link"
+            href={item.href}
+            aria-current={active === item.key ? 'page' : undefined}
+          >{item.label}</a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="end">
+      <div class="lang-switch" role="group" aria-label={t('aria_lang_switch')}>
+        {LANGUAGES.map((l, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true" class="lang-sep">/</span>}
+            <a
+              class="lang-btn"
+              href={switchLangPath(pathname, l)}
+              aria-current={l === lang ? 'true' : undefined}
+              aria-label={l === 'it' ? 'Italiano' : 'English'}
+              lang={l}
+            >{l.toUpperCase()}</a>
+          </>
+        ))}
+      </div>
+      <button
+        class="menu-toggle"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label={t('aria_menu')}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="mobile-menu" hidden>
+    <ul class="container-x" role="list">
+      {items.map((item) => (
+        <li>
+          <a
+            class="nav-link mobile-link"
+            href={item.href}
+            aria-current={active === item.key ? 'page' : undefined}
+          >{item.label}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 30;
+    background: color-mix(in srgb, var(--paper) 90%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .wordmark { font-size: 1.5rem; letter-spacing: -0.02em; }
+
+  .links {
+    display: none; align-items: center; gap: 2rem;
+    list-style: none; margin: 0; padding: 0;
+    font-size: var(--text-sm); font-weight: 500;
+  }
+  @media (min-width: 768px) { .links { display: flex; } }
+
+  .nav-link { color: var(--muted); transition: color var(--speed) var(--ease); padding: 0.5rem 0; }
+  .nav-link:hover { color: var(--ink); }
+  .nav-link[aria-current='page'] { color: var(--ink); box-shadow: 0 1px 0 0 var(--accent-text); }
+
+  .end { display: flex; align-items: center; gap: 0.75rem; }
+  .lang-switch { display: flex; align-items: center; gap: 0.4rem; font-size: var(--text-sm); }
+  .lang-sep { color: var(--line); }
+  .lang-btn {
+    font-weight: 500; color: var(--muted); padding: 0.6rem 0.35rem;
+    transition: color var(--speed) var(--ease);
+  }
+  .lang-btn:hover { color: var(--ink); }
+  .lang-btn[aria-current='true'] { color: var(--accent-text); }
+
+  .menu-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; margin-right: -10px;
+    background: none; border: 0; color: var(--ink); cursor: pointer;
+  }
+  @media (min-width: 768px) { .menu-toggle { display: none; } }
+
+  .mobile-menu { border-top: 1px solid var(--line); background: var(--paper); }
+  .mobile-menu ul { list-style: none; margin: 0; padding: 0.75rem 24px; }
+  .mobile-link { display: block; padding: 0.7rem 0; font-size: 1rem; }
+  @media (min-width: 768px) { .mobile-menu { display: none; } }
+</style>

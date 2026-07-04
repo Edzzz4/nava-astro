@@ -1,0 +1,44 @@
+---
+/** Terms of sale — structural placeholder, NOT legal advice. */
+import Legal from '../../../layouts/Legal.astro';
+import { LANGUAGES, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Lang;
+---
+
+<Legal {lang} title="Termini di vendita" description="Condizioni generali di vendita dei prodotti Nava.">
+  <h2>1. Venditore</h2>
+  <p>
+    I prodotti sono venduti da [TODO: ragione sociale], con sede in [TODO: indirizzo],
+    P.IVA [TODO: P.IVA], iscritta al registro imprese di [TODO: provincia].
+  </p>
+
+  <h2>2. Prodotti e prezzi</h2>
+  <p>
+    I prezzi indicati sul sito sono in euro e comprensivi di IVA. Il prezzo applicato è
+    quello visibile al momento dell'ordine. [TODO: specificare eventuali costi di
+    spedizione e soglie di gratuità.]
+  </p>
+
+  <h2>3. Ordini e pagamento</h2>
+  <p>
+    L'acquisto avviene tramite il circuito di pagamento indicato in ogni scheda prodotto
+    (Stripe). Il contratto si intende concluso alla conferma dell'ordine.
+    [TODO: dettagliare la procedura d'ordine e la conferma via email.]
+  </p>
+
+  <h2>4. Consegna</h2>
+  <p>[TODO: tempi, corrieri e aree di consegna — vedi anche la pagina Spedizioni e resi.]</p>
+
+  <h2>5. Garanzia legale</h2>
+  <p>
+    Ai prodotti si applica la garanzia legale di conformità prevista dal Codice del
+    Consumo (D.lgs. 206/2005). [TODO: verificare formulazione con un consulente.]
+  </p>
+
+  <h2>6. Legge applicabile e foro</h2>
+  <p>[TODO: legge applicabile e foro competente, con salvezza del foro del consumatore.]</p>
+</Legal>

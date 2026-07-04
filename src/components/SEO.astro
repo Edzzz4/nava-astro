@@ -1,0 +1,72 @@
+---
+/**
+ * <SEO> — per-page head tags: title/description, canonical, reciprocal
+ * hreflang (it/en + x-default), Open Graph + Twitter Card, JSON-LD.
+ * JSON-LD <script type="application/ld+json"> blocks are data, not
+ * executable script, so they are not affected by the strict CSP.
+ */
+import { LANGUAGES, DEFAULT_LANG, switchLangPath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  ogType?: 'website' | 'book' | 'article';
+  /** Absolute or root-relative path; defaults to the generated site image. */
+  ogImage?: string;
+  noindex?: boolean;
+  /** JSON-LD payloads (Organization, Book, BreadcrumbList, …). */
+  jsonLd?: object[];
+}
+
+const {
+  lang,
+  title,
+  description,
+  ogType = 'website',
+  ogImage = '/og-default.png',
+  noindex = false,
+  jsonLd = [],
+} = Astro.props;
+
+const site = Astro.site!;
+const pathname = Astro.url.pathname;
+const canonical = new URL(pathname, site).href;
+const ogImageAbs = new URL(ogImage, site).href;
+const alternates = LANGUAGES.map((l) => ({
+  lang: l,
+  href: new URL(switchLangPath(pathname, l), site).href,
+}));
+const xDefault = new URL(switchLangPath(pathname, DEFAULT_LANG), site).href;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+{noindex && <meta name="robots" content="noindex" />}
+
+{/* canonical + hreflang only make sense on indexable pages (not the 404) */}
+{!noindex && <link rel="canonical" href={canonical} />}
+{!noindex && alternates.map((alt) => <link rel="alternate" hreflang={alt.lang} href={alt.href} />)}
+{!noindex && <link rel="alternate" hreflang="x-default" href={xDefault} />}
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content="Nava" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImageAbs} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content={lang === 'it' ? 'it_IT' : 'en_US'} />
+{LANGUAGES.filter((l) => l !== lang).map((l) => (
+  <meta property="og:locale:alternate" content={l === 'it' ? 'it_IT' : 'en_US'} />
+))}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageAbs} />
+
+{jsonLd.map((data) => (
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(data)} />
+))}

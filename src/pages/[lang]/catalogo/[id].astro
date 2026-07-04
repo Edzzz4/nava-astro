@@ -1,0 +1,227 @@
+---
+/**
+ * Product page — statically generated for every product × language.
+ * JSON-LD: Book (with Offer) + BreadcrumbList.
+ */
+import Base from '../../../layouts/Base.astro';
+import BookCard from '../../../components/BookCard.astro';
+import {
+  categoryLabel,
+  formatPrice,
+  products,
+  related,
+  type Product,
+} from '../../../data/books';
+import { LANGUAGES, localePath, useTranslations, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.flatMap((lang) =>
+    products.map((product) => ({ params: { lang, id: product.id }, props: { product } }))
+  );
+}
+
+const lang = Astro.params.lang as Lang;
+const { product } = Astro.props as { product: Product };
+const t = useTranslations(lang);
+
+const title = product.title[lang];
+const subtitle = product.subtitle?.[lang];
+const description = product.description[lang];
+const bio = product.bio?.[lang];
+const paragraphs = description.split('\n\n');
+const format = product.format ? t(`fmt_${product.format}`) : undefined;
+const catalogUrl = localePath(lang, 'catalogo/');
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const coverAbs = new URL(product.cover, Astro.site).href;
+const hasIsbn = Boolean(product.isbn && product.isbn !== 'TBD');
+
+const relatedProducts = related(product);
+const metaDescription = `${title} — ${t('meta_book_desc_prefix')} ${product.author}. ${paragraphs[0]!.slice(0, 150)}`;
+
+const specs: { label: string; value: string }[] = [
+  ...(product.pages ? [{ label: t('bk_pages'), value: String(product.pages) }] : []),
+  ...(format ? [{ label: t('bk_format'), value: format }] : []),
+  { label: t('bk_year'), value: String(product.year) },
+  ...(hasIsbn ? [{ label: t('bk_isbn'), value: product.isbn! }] : []),
+  ...(product.dimensioni ? [{ label: t('bk_dimensions'), value: product.dimensioni }] : []),
+  ...(product.tecnica ? [{ label: t('bk_technique'), value: product.tecnica[lang] }] : []),
+  ...(product.tiratura ? [{ label: t('bk_edition'), value: String(product.tiratura) }] : []),
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Book',
+    name: title,
+    author: { '@type': 'Person', name: product.author },
+    inLanguage: 'it',
+    ...(hasIsbn ? { isbn: product.isbn } : {}),
+    ...(product.pages ? { numberOfPages: product.pages } : {}),
+    ...(product.format
+      ? { bookFormat: product.format === 'Hardcover' ? 'https://schema.org/Hardcover' : 'https://schema.org/Paperback' }
+      : {}),
+    datePublished: String(product.year),
+    image: coverAbs,
+    publisher: { '@type': 'Organization', name: 'Nava' },
+    url: pageUrl,
+    offers: {
+      '@type': 'Offer',
+      price: product.price.toFixed(2),
+      priceCurrency: 'EUR',
+      availability: 'https://schema.org/InStock',
+      url: pageUrl,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t('nav_home'), item: new URL(localePath(lang), Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: t('nav_catalog'), item: new URL(catalogUrl, Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: title, item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base
+  {lang}
+  title={`${title} — Nava`}
+  description={metaDescription}
+  active="catalog"
+  ogType="book"
+  ogImage={product.cover}
+  {jsonLd}
+>
+  <div class="container-x page">
+    <nav aria-label={t('aria_breadcrumb')} class="breadcrumb">
+      <a href={catalogUrl} class="back link-inline">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+        {t('bk_back')}
+      </a>
+    </nav>
+
+    <article class="product">
+      <div class="cover-col">
+        <img
+          src={product.cover}
+          width="600"
+          height="800"
+          loading="eager"
+          decoding="async"
+          class="cover main-cover"
+          alt={`${t('aria_cover_prefix')} ${title}`}
+        />
+      </div>
+
+      <div>
+        <p class="smallcaps text-accent genre">{categoryLabel(product.category, lang)}</p>
+        <h1 class="serif title">{title}</h1>
+        {subtitle && <p class="serif text-muted subtitle"><em>{subtitle}</em></p>}
+        <p class="author">{t('bk_author_label')}: <strong>{product.author}</strong></p>
+        <p class="serif price">{formatPrice(product.price)}</p>
+
+        <div class="buy">
+          <a href={product.stripeLink} class="btn btn-primary">{t('buy_now')}</a>
+          {product.amazonLink && <a href={product.amazonLink} class="btn btn-ghost">{t('buy_amazon')}</a>}
+        </div>
+
+        <dl class="specs">
+          {specs.map((spec) => (
+            <div class="spec-row">
+              <dt class="text-muted">{spec.label}</dt>
+              <dd>{spec.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </article>
+
+    <section class="desc-block">
+      <div class="prose desc">
+        {paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+      <aside class="preview reveal">
+        <div class="preview-box">
+          <h2 class="serif preview-h">{t('bk_preview_title')}</h2>
+          <div class="preview-ph text-muted">{t('bk_preview_msg')}</div>
+        </div>
+      </aside>
+    </section>
+
+    {bio && (
+      <section class="bio-block">
+        <h2 class="serif bio-h">{t('bk_about_author')}</h2>
+        <div class="bio">
+          <div class="avatar serif" aria-hidden="true">{product.author.charAt(0)}</div>
+          <div>
+            <p class="bio-name">{product.author}</p>
+            <p class="text-muted bio-text">{bio}</p>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="related">
+      <h2 class="serif smallcaps related-h">{t('bk_related')}</h2>
+      <div class="related-grid">
+        {relatedProducts.map((rel) => <BookCard product={rel} {lang} />)}
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: var(--space-7); padding-bottom: var(--space-8); }
+  .breadcrumb { margin-bottom: var(--space-6); }
+  .back { display: inline-flex; align-items: center; gap: 0.25rem; font-size: var(--text-sm); border-bottom: 0; }
+
+  .product { display: grid; grid-template-columns: 1fr; gap: var(--space-7); align-items: start; }
+  @media (min-width: 768px) {
+    .product { grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .cover-col { position: sticky; top: 96px; }
+  }
+  .main-cover { max-width: 420px; }
+
+  .genre { font-size: var(--text-sm); }
+  .title { font-size: var(--text-5xl); margin-top: var(--space-2); }
+  .subtitle { font-size: var(--text-xl); margin-top: var(--space-3); }
+  .author { margin-top: var(--space-4); font-size: var(--text-lg); }
+  .price { font-size: var(--text-3xl); margin-top: var(--space-5); }
+  .buy { margin-top: var(--space-5); display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+  .specs { margin: var(--space-6) 0 0; font-size: var(--text-sm); }
+  .spec-row {
+    display: flex; justify-content: space-between; gap: var(--space-4);
+    padding: var(--space-3) 0; border-bottom: 1px solid var(--line);
+  }
+  .spec-row dd { margin: 0; text-align: right; }
+
+  .desc-block { margin-top: var(--space-8); display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
+  @media (min-width: 768px) { .desc-block { grid-template-columns: 1fr 320px; margin-top: var(--space-9); } }
+  .desc { font-size: var(--text-lg); }
+  .preview-box { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: var(--space-5); background: var(--surface); }
+  .preview-h { font-size: var(--text-xl); }
+  .preview-ph {
+    margin-top: var(--space-4); aspect-ratio: 3 / 4;
+    border: 1px dashed var(--line); border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; font-size: var(--text-sm); padding: var(--space-5);
+  }
+
+  .bio-block { margin-top: var(--space-8); border-top: 1px solid var(--line); padding-top: var(--space-7); }
+  .bio-h { font-size: var(--text-2xl); }
+  .bio { margin-top: var(--space-4); display: flex; align-items: flex-start; gap: var(--space-5); max-width: 60ch; }
+  .avatar {
+    width: 64px; height: 64px; border-radius: var(--radius-full);
+    background: var(--line); color: var(--muted); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: var(--text-2xl);
+  }
+  .bio-name { font-weight: 500; }
+  .bio-text { margin-top: var(--space-1); }
+
+  .related { margin-top: var(--space-9); }
+  .related-h { font-size: var(--text-3xl); margin-bottom: var(--space-7); }
+  .related-grid { display: grid; grid-template-columns: 1fr; gap: 3.5rem 2rem; }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

@@ -1,0 +1,57 @@
+---
+/**
+ * Base layout: <head> (SEO, fonts, favicon), nav, footer, skip link,
+ * Astro View Transitions (native fallback where unsupported) and the
+ * shared site script (mobile menu, scroll reveal, newsletter demo).
+ * All scripts/styles end up in external files — the CSP allows no
+ * 'unsafe-inline'.
+ */
+import { ClientRouter } from 'astro:transitions';
+import SEO from '../components/SEO.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { useTranslations, type Lang } from '../i18n';
+import '../styles/global.css';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  active?: 'home' | 'catalog' | 'about' | 'contact';
+  ogType?: 'website' | 'book' | 'article';
+  ogImage?: string;
+  noindex?: boolean;
+  jsonLd?: object[];
+}
+
+const { lang, title, description, active, ogType, ogImage, noindex, jsonLd } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <SEO {lang} {title} {description} {ogType} {ogImage} {noindex} {jsonLd} />
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">{t('skip_to_content')}</a>
+    <header>
+      <Nav {lang} {active} />
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <Footer {lang} />
+    <script src="../scripts/site.ts"></script>
+  </body>
+</html>

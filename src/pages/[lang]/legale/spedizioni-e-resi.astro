@@ -1,0 +1,35 @@
+---
+/** Shipping & returns — structural placeholder, NOT legal advice. */
+import Legal from '../../../layouts/Legal.astro';
+import { LANGUAGES, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Lang;
+---
+
+<Legal {lang} title="Spedizioni e resi" description="Tempi di spedizione, corrieri, costi e procedura di reso per gli ordini Nava.">
+  <h2>1. Aree e tempi di consegna</h2>
+  <p>
+    Spediamo in [TODO: aree servite, es. Italia ed Europa]. I tempi indicativi di consegna
+    sono [TODO: giorni lavorativi] dall'affidamento al corriere [TODO: corriere].
+  </p>
+
+  <h2>2. Costi di spedizione</h2>
+  <p>[TODO: tabella costi e soglia per la spedizione gratuita.]</p>
+
+  <h2>3. Ordini danneggiati o errati</h2>
+  <p>
+    Se il pacco arriva danneggiato o il contenuto non corrisponde all'ordine, scrivi entro
+    [TODO: giorni] a <a href="mailto:info@navaeditore.com">info@navaeditore.com</a>
+    allegando una foto: sostituiamo o rimborsiamo senza costi aggiuntivi.
+  </p>
+
+  <h2>4. Resi</h2>
+  <p>
+    Per il reso volontario entro 14 giorni vale il <a href={`/${lang}/legale/recesso/`}>diritto
+    di recesso</a>. Indirizzo di reso: [TODO: indirizzo]. [TODO: chi paga la spedizione
+    di reso e modalità di rimborso.]
+  </p>
+</Legal>

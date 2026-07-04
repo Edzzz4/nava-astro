@@ -1,0 +1,131 @@
+---
+/**
+ * Contact page. The form has a honeypot field + client validation
+ * (src/scripts/contact.ts). The endpoint is still FORM_ENDPOINT_TBD:
+ * submits are intercepted and show the demo success message.
+ * NOTE for later: when wiring a real endpoint, add its origin to
+ * form-action in public/_headers.
+ */
+import Base from '../../layouts/Base.astro';
+import { LANGUAGES, useTranslations, type Lang } from '../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+const direct = [
+  { heading: t('ct_press_h'), email: t('ct_press') },
+  { heading: t('ct_rights_h'), email: t('ct_rights') },
+  { heading: t('ct_subs_h'), email: t('ct_subs') },
+];
+---
+
+<Base {lang} title={t('meta_contact_title')} description={t('meta_contact_desc')} active="contact">
+  <div class="container-x page">
+    <header class="page-head">
+      <p class="smallcaps text-muted kicker">{t('ct_kicker')}</p>
+      <h1 class="serif page-title">{t('ct_title')}</h1>
+      <p class="text-muted page-lead">{t('ct_lead')}</p>
+    </header>
+
+    <div class="layout">
+      <!-- Form -->
+      <section>
+        <h2 class="serif form-h">{t('ct_form_h')}</h2>
+
+        <form data-contact-form action="FORM_ENDPOINT_TBD" method="post" novalidate class="form">
+          <div>
+            <label for="cf-name" class="label">{t('ct_name')}</label>
+            <input id="cf-name" name="name" type="text" required autocomplete="name" class="field" placeholder={t('ct_name_ph')} />
+          </div>
+          <div>
+            <label for="cf-email" class="label">{t('ct_email')}</label>
+            <input id="cf-email" name="email" type="email" required autocomplete="email" class="field" placeholder={t('ct_email_ph')} />
+          </div>
+          <div class="full">
+            <label for="cf-msg" class="label">{t('ct_message')}</label>
+            <textarea id="cf-msg" name="message" rows="6" required class="field" placeholder={t('ct_msg_ph')}></textarea>
+          </div>
+
+          <!-- Honeypot: hidden from humans, bots fill it and get dropped. -->
+          <div class="hp" aria-hidden="true">
+            <label for="cf-website" tabindex="-1">Website</label>
+            <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="full actions">
+            <button type="submit" class="btn btn-primary">{t('ct_send')}</button>
+            <p data-contact-ok hidden role="status" class="text-accent">{t('ct_success')}</p>
+            <p data-contact-err hidden role="alert" class="text-accent">{t('ct_error')}</p>
+          </div>
+        </form>
+      </section>
+
+      <!-- Direct contacts -->
+      <aside class="direct">
+        <h2 class="smallcaps text-muted direct-h">{t('ct_direct_h')}</h2>
+        <div class="direct-list">
+          {direct.map((d) => (
+            <div>
+              <p class="text-muted direct-label">{d.heading}</p>
+              <a class="link-inline" href={`mailto:${d.email}`}>{d.email}</a>
+            </div>
+          ))}
+        </div>
+
+        <h2 class="smallcaps text-muted social-h">{t('ct_social_h')}</h2>
+        <div class="social">
+          <a href="https://instagram.com/" rel="noopener" aria-label="Instagram" class="icon-link">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="https://x.com/" rel="noopener" aria-label="X" class="icon-link">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3l-7 8 8.2 10h-6.4l-5-6.1L8 21H5l7.4-8.5L4.5 3h6.6l4.5 5.6L17.5 3Zm-1 16h1.7L8 4.8H6.2L16.5 19Z"/></svg>
+          </a>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="../../scripts/contact.ts"></script>
+</Base>
+
+<style>
+  .page { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+  .page-head { max-width: 44ch; margin-bottom: var(--space-8); }
+  .kicker { font-size: var(--text-sm); margin-bottom: var(--space-3); }
+  .page-title { font-size: var(--text-hero); }
+  .page-lead { font-size: var(--text-xl); margin-top: var(--space-5); }
+
+  .layout { display: grid; grid-template-columns: 1fr; gap: var(--space-8); }
+  @media (min-width: 1024px) { .layout { grid-template-columns: 1fr 360px; gap: 5rem; } }
+
+  .form-h { font-size: var(--text-2xl); margin-bottom: var(--space-6); }
+  .form { display: grid; grid-template-columns: 1fr; gap: var(--space-5); }
+  @media (min-width: 640px) {
+    .form { grid-template-columns: 1fr 1fr; }
+    .full { grid-column: span 2; }
+  }
+  .label { display: block; font-size: var(--text-sm); margin-bottom: var(--space-2); }
+  .actions { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+
+  /* Honeypot: visually removed but present for bots. */
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .direct-h, .social-h { font-size: var(--text-sm); margin-bottom: var(--space-5); }
+  .social-h { margin-top: var(--space-7); }
+  @media (min-width: 1024px) {
+    .direct { border-left: 1px solid var(--line); padding-left: var(--space-7); }
+  }
+  .direct-list { display: flex; flex-direction: column; gap: var(--space-5); }
+  .direct-label { font-size: var(--text-sm); margin-bottom: var(--space-1); }
+
+  .social { display: flex; gap: 1.25rem; }
+  .icon-link {
+    color: var(--muted); transition: color var(--speed) var(--ease);
+    display: inline-flex; padding: 0.6rem; margin: -0.6rem;
+  }
+  .icon-link:hover { color: var(--ink); }
+</style>

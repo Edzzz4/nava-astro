@@ -1,0 +1,196 @@
+---
+/** Home — hero, category index, featured titles, why-us, newsletter. */
+import Base from '../../layouts/Base.astro';
+import BookCard from '../../components/BookCard.astro';
+import CategoryIcon from '../../components/CategoryIcon.astro';
+import { CATEGORIES, products } from '../../data/books';
+import { LANGUAGES, localePath, useTranslations, type Lang } from '../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+const counts = new Map<string, number>();
+for (const p of products) counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+const featured = products.filter((p) => p.featured).slice(0, 6);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Nava',
+    url: 'https://navaeditore.com/',
+    logo: 'https://navaeditore.com/favicon.svg',
+    description: t('meta_home_desc'),
+    email: 'info@navaeditore.com',
+    foundingDate: '2019',
+  },
+];
+---
+
+<Base
+  {lang}
+  title={t('meta_home_title')}
+  description={t('meta_home_desc')}
+  active="home"
+  {jsonLd}
+>
+  <!-- HERO -->
+  <section class="container-x hero">
+    <p class="smallcaps text-muted kicker">{t('hero_kicker')}</p>
+    <h1 class="serif hero-title">
+      {t('hero_line1')}<br />
+      <em>{t('hero_line2')}</em>
+    </h1>
+    <p class="text-muted hero-sub">{t('hero_sub')}</p>
+    <div class="hero-cta">
+      <a href={localePath(lang, 'catalogo/')} class="btn btn-primary">{t('hero_cta1')}</a>
+      <a href={`${localePath(lang, 'catalogo/')}#novita`} class="btn btn-ghost">{t('hero_cta2')}</a>
+    </div>
+  </section>
+
+  <hr class="rule container-x" />
+
+  <!-- CATEGORY INDEX -->
+  <section class="container-x block">
+    <div class="block-head">
+      <h2 class="serif smallcaps block-title">{t('cat_title')}</h2>
+      <p class="text-muted block-sub">{t('cat_sub')}</p>
+    </div>
+    <ul class="cat-grid" role="list">
+      {CATEGORIES.map((cat) => (
+        <li>
+          <a href={`${localePath(lang, 'catalogo/')}?cat=${cat.slug}`} class="cat-card reveal">
+            <span class="text-accent"><CategoryIcon slug={cat.slug} /></span>
+            <h3 class="serif cat-name">{cat[lang]}</h3>
+            <span class="text-muted cat-count">{counts.get(cat.slug) ?? 0} {t('cat_count_word')}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <hr class="rule container-x" />
+
+  <!-- FEATURED -->
+  <section id="novita" class="container-x block">
+    <div class="block-head">
+      <h2 class="serif smallcaps block-title">{t('feat_title')}</h2>
+      <a href={localePath(lang, 'catalogo/')} class="link-inline viewall">{t('feat_viewall')}</a>
+    </div>
+    <div class="feat-grid">
+      {featured.map((product) => <BookCard {product} {lang} />)}
+    </div>
+  </section>
+
+  <hr class="rule container-x" />
+
+  <!-- WHY US -->
+  <section class="container-x block">
+    <h2 class="serif smallcaps block-title why-title">{t('why_title')}</h2>
+    <div class="why-grid">
+      {(
+        [
+          ['01', t('why1_h'), t('why1_p')],
+          ['02', t('why2_h'), t('why2_p')],
+          ['03', t('why3_h'), t('why3_p')],
+        ] as const
+      ).map(([num, heading, text]) => (
+        <div class="reveal">
+          <span class="serif text-accent why-num">{num}</span>
+          <h3 class="serif why-h">{heading}</h3>
+          <p class="text-muted why-p">{text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="band">
+    <div class="container-x band-inner">
+      <h2 class="serif band-title">{t('nl_title')}</h2>
+      <p class="band-sub">{t('nl_sub')}</p>
+      <form data-newsletter method="post" action="#" class="nl-form">
+        <label for="nl-email" class="sr-only">{t('nl_label')}</label>
+        <input
+          id="nl-email"
+          name="email"
+          type="email"
+          required
+          autocomplete="email"
+          class="field nl-input"
+          placeholder={t('nl_ph')}
+        />
+        <button type="submit" class="btn btn-primary">{t('nl_btn')}</button>
+        <p data-newsletter-ok hidden role="status" class="nl-ok">✓</p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: var(--space-9); padding-bottom: var(--space-8); }
+  @media (min-width: 768px) { .hero { padding-top: 9rem; padding-bottom: 7rem; } }
+  .kicker { font-size: var(--text-sm); margin-bottom: var(--space-5); }
+  .hero-title { font-size: var(--text-hero); line-height: 0.98; max-width: 14ch; }
+  .hero-title em { font-weight: 400; }
+  .hero-sub { margin-top: var(--space-6); font-size: var(--text-xl); max-width: 46ch; }
+  .hero-cta { margin-top: var(--space-7); display: flex; flex-wrap: wrap; gap: var(--space-4); }
+
+  .block { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+  @media (min-width: 768px) { .block { padding-top: var(--space-9); padding-bottom: var(--space-9); } }
+  .block-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-7);
+  }
+  .block-title { font-size: var(--text-4xl); }
+  .block-sub { max-width: 34ch; }
+  .viewall { font-size: var(--text-sm); }
+
+  .cat-grid {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: 1fr; gap: 1px;
+    background: var(--line); border: 1px solid var(--line);
+  }
+  @media (min-width: 640px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
+  .cat-card {
+    display: flex; flex-direction: column; height: 100%; min-height: 180px;
+    background: var(--paper); padding: var(--space-6);
+    transition: background var(--speed) var(--ease);
+  }
+  .cat-card:hover { background: var(--surface); }
+  .cat-card > span:first-child { margin-bottom: auto; }
+  .cat-name { font-size: var(--text-2xl); margin-top: var(--space-5); }
+  .cat-card:hover .cat-name { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .cat-count { font-size: var(--text-sm); margin-top: var(--space-1); }
+
+  .feat-grid {
+    display: grid; grid-template-columns: 1fr; gap: 2rem 2rem;
+  }
+  @media (min-width: 640px) { .feat-grid { grid-template-columns: repeat(2, 1fr); gap: 3.5rem 2rem; } }
+  @media (min-width: 1024px) { .feat-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .why-title { margin-bottom: var(--space-7); }
+  .why-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
+  @media (min-width: 768px) { .why-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-6); } }
+  .why-num { font-size: var(--text-3xl); }
+  .why-h { font-size: var(--text-2xl); margin-top: var(--space-3); }
+  .why-p { margin-top: var(--space-2); }
+
+  .band { background: var(--band-bg); color: var(--band-fg); }
+  .band-inner { max-width: 720px; margin-right: auto; padding-top: var(--space-8); padding-bottom: var(--space-8); }
+  @media (min-width: 768px) { .band-inner { padding-top: var(--space-9); padding-bottom: var(--space-9); } }
+  .band-title { font-size: var(--text-3xl); color: var(--band-fg); }
+  .band-sub { margin-top: var(--space-4); color: var(--band-muted); }
+  .nl-form {
+    margin-top: var(--space-6); display: flex; flex-direction: column;
+    gap: var(--space-3); max-width: 520px; align-items: stretch;
+  }
+  @media (min-width: 640px) { .nl-form { flex-direction: row; align-items: center; } }
+  .nl-input { flex: 1; }
+  .nl-ok { color: var(--band-fg); font-size: var(--text-lg); }
+</style>

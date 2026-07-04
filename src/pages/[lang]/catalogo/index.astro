@@ -1,0 +1,136 @@
+---
+/**
+ * Catalog — all products rendered at build time. A single vanilla JS
+ * island (src/scripts/catalog.ts) adds category filter, instant text
+ * search and sorting on top of the DOM: with JS disabled everything
+ * simply stays visible.
+ */
+import Base from '../../../layouts/Base.astro';
+import BookCard from '../../../components/BookCard.astro';
+import { CATEGORIES, products } from '../../../data/books';
+import { LANGUAGES, useTranslations, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+const sorted = [...products].sort((a, b) => b.year - a.year);
+---
+
+<Base
+  {lang}
+  title={t('meta_catalog_title')}
+  description={t('meta_catalog_desc')}
+  active="catalog"
+>
+  <div class="container-x page" id="novita">
+    <header class="page-head">
+      <p class="smallcaps text-muted kicker">{t('hero_kicker')}</p>
+      <h1 class="serif page-title">{t('catpg_title')}</h1>
+      <p class="text-muted page-sub">{t('catpg_sub')}</p>
+    </header>
+
+    <div class="layout">
+      <!-- Sidebar: filters + search (progressively enhanced) -->
+      <aside aria-label={t('filter_title')} class="sidebar">
+        <label for="catalog-search" class="smallcaps text-muted side-h">{t('search_label')}</label>
+        <input
+          id="catalog-search"
+          type="search"
+          class="field search"
+          placeholder={t('search_ph')}
+          autocomplete="off"
+          data-catalog-search
+        />
+
+        <h2 class="smallcaps text-muted side-h">{t('filter_title')}</h2>
+        <div class="filters" data-catalog-filters>
+          <button class="filter-btn" data-cat="all" aria-pressed="true">{t('filter_all')}</button>
+          {CATEGORIES.map((cat) => (
+            <button class="filter-btn" data-cat={cat.slug} aria-pressed="false">{cat[lang]}</button>
+          ))}
+        </div>
+      </aside>
+
+      <!-- Results -->
+      <section>
+        <div class="toolbar">
+          <p class="text-muted count" aria-live="polite">
+            <span data-catalog-count>{products.length}</span> {t('results_word')}
+          </p>
+          <label class="sort-label">
+            <span class="text-muted">{t('sort_label')}</span>
+            <select class="select" data-catalog-sort>
+              <option value="newest">{t('sort_newest')}</option>
+              <option value="price-asc">{t('sort_price_asc')}</option>
+              <option value="price-desc">{t('sort_price_desc')}</option>
+              <option value="az">{t('sort_az')}</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid" data-catalog-grid>
+          {sorted.map((product, i) => <BookCard {product} {lang} eager={i < 3} />)}
+        </div>
+        <p class="text-muted empty" data-catalog-empty hidden>{t('empty_msg')}</p>
+      </section>
+    </div>
+  </div>
+
+  <script src="../../../scripts/catalog.ts"></script>
+</Base>
+
+<style>
+  .page { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+  .page-head { margin-bottom: var(--space-7); }
+  .kicker { font-size: var(--text-sm); margin-bottom: var(--space-3); }
+  .page-title { font-size: var(--text-5xl); }
+  .page-sub { margin-top: var(--space-4); max-width: 44ch; }
+
+  .layout { display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
+  @media (min-width: 1024px) {
+    .layout { grid-template-columns: 220px 1fr; gap: 3.5rem; }
+    .sidebar { position: sticky; top: 96px; align-self: start; }
+  }
+
+  .side-h { display: block; font-size: var(--text-sm); margin: var(--space-5) 0 var(--space-3); }
+  .side-h:first-child { margin-top: 0; }
+  .search { font-size: 0.95rem; }
+
+  .filters { display: flex; flex-direction: column; gap: 2px; }
+  .filter-btn {
+    display: block; width: 100%; text-align: left;
+    padding: 0.55rem 0.25rem 0.55rem 0.75rem; min-height: 44px;
+    color: var(--muted); background: none; border: 0; cursor: pointer;
+    font-size: 1rem; border-left: 2px solid transparent;
+    transition: color var(--speed) var(--ease), border-color var(--speed) var(--ease);
+  }
+  .filter-btn:hover { color: var(--ink); }
+  .filter-btn[aria-pressed='true'] { color: var(--accent-text); border-left-color: var(--accent-text); }
+
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+    margin-bottom: var(--space-6); padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+  .count { font-size: var(--text-sm); }
+  .sort-label { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); }
+  .select {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 0.95rem; color: var(--ink);
+    padding: 0.55rem 2.2rem 0.55rem 0.9rem; min-height: 44px; cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%235B554C' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.8rem center;
+  }
+  .select:focus { outline: 2px solid var(--accent-text); outline-offset: 0; border-color: var(--accent); }
+
+  .grid { display: grid; grid-template-columns: 1fr; gap: 3.5rem 2rem; }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1280px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .empty { padding: var(--space-8) 0; text-align: center; }
+</style>

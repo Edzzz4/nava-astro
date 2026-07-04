@@ -1,0 +1,34 @@
+---
+/**
+ * Custom 404 (Netlify serves dist/404.html for any missing path).
+ * Language is unknown at this point, so the page defaults to Italian
+ * with an English echo line.
+ */
+import Base from '../layouts/Base.astro';
+import { useTranslations } from '../i18n';
+
+const t = useTranslations('it');
+const tEn = useTranslations('en');
+---
+
+<Base lang="it" title="404 — Nava" description={t('nf_msg')} noindex>
+  <div class="container-x wrap">
+    <p class="serif text-accent code">404</p>
+    <h1 class="serif title">{t('nf_title')}</h1>
+    <p class="text-muted msg">{t('nf_msg')}</p>
+    <p class="text-muted msg-en" lang="en"><em>{tEn('nf_msg')}</em></p>
+    <div class="cta">
+      <a href="/it/" class="btn btn-primary">{t('nf_home')}</a>
+      <a href="/it/catalogo/" class="btn btn-ghost">{t('nf_catalog')}</a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .wrap { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; padding-top: var(--space-9); padding-bottom: var(--space-9); }
+  .code { font-size: clamp(5rem, 18vw, 12rem); line-height: 1; }
+  .title { font-size: var(--text-5xl); margin-top: var(--space-4); max-width: 18ch; }
+  .msg { font-size: var(--text-lg); margin-top: var(--space-4); max-width: 40ch; }
+  .msg-en { font-size: var(--text-sm); margin-top: var(--space-2); }
+  .cta { margin-top: var(--space-7); display: flex; flex-wrap: wrap; gap: var(--space-4); }
+</style>

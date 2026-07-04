@@ -1,0 +1,21 @@
+---
+/**
+ * Root "/" — on Netlify this is never served: netlify.toml forces a
+ * 301 to /it/. This static meta-refresh page is only a fallback for
+ * other hosts / local previews (no JS involved).
+ */
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/it/" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://navaeditore.com/it/" />
+    <title>Nava</title>
+  </head>
+  <body>
+    <p><a href="/it/">Italiano</a> · <a href="/en/">English</a></p>
+  </body>
+</html>

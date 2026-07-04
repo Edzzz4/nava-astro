@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" role="img" aria-label="Cover of Weekend Lenti">
+  <rect width="600" height="800" fill="#4A6356"/>
+  <rect x="28" y="28" width="544" height="744" fill="none" stroke="#C5D6C9" stroke-width="1.5" opacity="0.55"/>
+  <text x="300" y="92" fill="#C5D6C9" font-family="Georgia, serif" font-size="20" letter-spacing="6" text-anchor="middle" opacity="0.85">N A V A</text>
+  <line x1="240" y1="312" x2="360" y2="312" stroke="#C5D6C9" stroke-width="1" opacity="0.6"/>
+  <text x="300" y="392" fill="#EFF5F0" font-family="Georgia, serif" font-style="italic" font-size="48" text-anchor="middle">Weekend</text>
+  <text x="300" y="452" fill="#EFF5F0" font-family="Georgia, serif" font-style="italic" font-size="48" text-anchor="middle">Lenti</text>
+  <line x1="240" y1="500" x2="360" y2="500" stroke="#C5D6C9" stroke-width="1" opacity="0.6"/>
+  <text x="300" y="720" fill="#C5D6C9" font-family="Georgia, serif" font-size="22" letter-spacing="3" text-anchor="middle">Chiara Sole</text>
+</svg>
