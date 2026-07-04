@@ -58,6 +58,7 @@ export const en: Dictionary = {
 
   /* catalog */
   catpg_title: 'Catalog', catpg_sub: 'Every Nava title, in one place.',
+  cat_other: 'Other categories', cat_all_titles: 'All titles in this series',
   filter_title: 'Categories', filter_all: 'All categories',
   search_label: 'Search the catalog', search_ph: 'Search title or author…',
   sort_label: 'Sort', sort_newest: 'Newest', sort_price_asc: 'Price: low to high',

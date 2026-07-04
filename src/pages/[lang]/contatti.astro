@@ -1,10 +1,12 @@
 ---
 /**
- * Contact page. The form has a honeypot field + client validation
- * (src/scripts/contact.ts). The endpoint is still FORM_ENDPOINT_TBD:
- * submits are intercepted and show the demo success message.
- * NOTE for later: when wiring a real endpoint, add its origin to
- * form-action in public/_headers.
+ * Contact page. The form is handled by Netlify Forms (name="contact"):
+ * messages land in the Netlify dashboard → Forms. Honeypot ("website")
+ * + client validation live in src/scripts/contact.ts, which submits
+ * via fetch to stay on the page; with JS off the native POST works and
+ * Netlify shows its own success page.
+ * NOTE: form detection must be enabled once in Netlify → Project
+ * configuration → Forms → "Enable form detection".
  */
 import Base from '../../layouts/Base.astro';
 import { LANGUAGES, useTranslations, type Lang } from '../../i18n';
@@ -36,7 +38,16 @@ const direct = [
       <section>
         <h2 class="serif form-h">{t('ct_form_h')}</h2>
 
-        <form data-contact-form action="FORM_ENDPOINT_TBD" method="post" novalidate class="form">
+        <form
+          data-contact-form
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="website"
+          class="form"
+        >
+          <input type="hidden" name="form-name" value="contact" />
+          <input type="hidden" name="lang" value={lang} />
           <div>
             <label for="cf-name" class="label">{t('ct_name')}</label>
             <input id="cf-name" name="name" type="text" required autocomplete="name" class="field" placeholder={t('ct_name_ph')} />

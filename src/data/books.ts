@@ -15,16 +15,75 @@
 import type { Lang } from '../i18n';
 
 export const CATEGORIES = [
-  { slug: 'libri-per-bambini',       it: 'Libri per bambini',          en: "Children's books" },
-  { slug: 'humor-e-regali',          it: 'Humor e regali',             en: 'Humor & gifts' },
-  { slug: 'informatica-web-digital', it: 'Informatica, Web e Digital', en: 'Computing, Web & Digital' },
-  { slug: 'affari-e-finanza',        it: 'Affari e finanza',           en: 'Business & finance' },
-  { slug: 'cookbook',                it: 'Cookbook',                   en: 'Cookbooks' },
-  { slug: 'fai-da-te',               it: 'Fai da te',                  en: 'DIY' },
-  { slug: 'graphic-novel-fumetti',   it: 'Graphic novel e fumetti',    en: 'Graphic novels & comics' },
-  { slug: 'pillole-di',              it: 'Pillole di…',                en: 'In a nutshell…' },
-  { slug: 'tempo-libero-lifestyle',  it: 'Tempo libero e Lifestyle',   en: 'Leisure & Lifestyle' },
-] as const satisfies readonly { slug: string; it: string; en: string }[];
+  {
+    slug: 'libri-per-bambini', it: 'Libri per bambini', en: "Children's books",
+    desc: {
+      it: 'Albi illustrati e primi libri, disegnati e stampati per resistere a mani piccole e letture infinite.',
+      en: 'Picture books and first reads, designed and printed to survive small hands and endless rereading.',
+    },
+  },
+  {
+    slug: 'humor-e-regali', it: 'Humor e regali', en: 'Humor & gifts',
+    desc: {
+      it: 'Libri che fanno ridere sul serio: il regalo giusto quando non sai cosa regalare.',
+      en: "Books that are seriously funny: the right gift when you don't know what to give.",
+    },
+  },
+  {
+    slug: 'informatica-web-digital', it: 'Informatica, Web e Digital', en: 'Computing, Web & Digital',
+    desc: {
+      it: 'Il digitale spiegato senza gergo: saggi limpidi su software, rete e vita connessa.',
+      en: 'The digital world without the jargon: clear essays on software, the web and connected life.',
+    },
+  },
+  {
+    slug: 'affari-e-finanza', it: 'Affari e finanza', en: 'Business & finance',
+    desc: {
+      it: 'Soldi, imprese e lavoro raccontati con calma: niente scorciatoie, niente promesse.',
+      en: 'Money, business and work told calmly: no shortcuts, no promises.',
+    },
+  },
+  {
+    slug: 'cookbook', it: 'Cookbook', en: 'Cookbooks',
+    desc: {
+      it: 'Ricettari veri, di case e di famiglie: cucina da fare, non solo da fotografare.',
+      en: 'Real cookbooks from real kitchens: food to cook, not just to photograph.',
+    },
+  },
+  {
+    slug: 'fai-da-te', it: 'Fai da te', en: 'DIY',
+    desc: {
+      it: 'Riparare, costruire, rimettere a posto: manuali pratici per mani volenterose.',
+      en: 'Repair, build, set right: practical manuals for willing hands.',
+    },
+  },
+  {
+    slug: 'graphic-novel-fumetti', it: 'Graphic novel e fumetti', en: 'Graphic novels & comics',
+    desc: {
+      it: 'Storie disegnate e stampate con cura: romanzi a fumetti e antologie da collezione.',
+      en: 'Stories drawn and printed with care: graphic novels and anthologies worth collecting.',
+    },
+  },
+  {
+    slug: 'pillole-di', it: 'Pillole di…', en: 'In a nutshell…',
+    desc: {
+      it: 'Grandi idee in poche pagine: la collana tascabile per capire di cosa si parla.',
+      en: 'Big ideas in a few pages: the pocket series for following the conversation.',
+    },
+  },
+  {
+    slug: 'tempo-libero-lifestyle', it: 'Tempo libero e Lifestyle', en: 'Leisure & Lifestyle',
+    desc: {
+      it: 'Viaggi lenti, weekend e buone abitudini: libri per il tempo che resta.',
+      en: 'Slow travel, weekends and good habits: books for the time that remains.',
+    },
+  },
+] as const satisfies readonly {
+  slug: string;
+  it: string;
+  en: string;
+  desc: { it: string; en: string };
+}[];
 
 export type CategorySlug = (typeof CATEGORIES)[number]['slug'];
 

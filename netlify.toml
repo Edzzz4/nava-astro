@@ -33,6 +33,21 @@
   force = true
 
 # Old flat .html URLs from the previous static site → new localized routes.
+# Query-param rules FIRST: redirects are evaluated top-down, first match wins.
+[[redirects]]
+  from = "/libro.html"
+  to = "/it/catalogo/:id/"
+  status = 301
+  [redirects.query]
+    id = ":id"
+
+[[redirects]]
+  from = "/catalogo.html"
+  to = "/it/categoria/:cat/"
+  status = 301
+  [redirects.query]
+    cat = ":cat"
+
 [[redirects]]
   from = "/index.html"
   to = "/it/"

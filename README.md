@@ -56,8 +56,11 @@ npm run preview    # serve dist/ in locale
    I tipi sono il guardrail: un campo mancante/malformato o una `category`
    inesistente **rompono la build** (`astro check` / `astro build`).
 2. Aggiungi la copertina in `public/covers/<id>.svg` (o `.jpg`) e aggiorna `cover`.
-3. `stripeLink`: lascia `STRIPE_LINK_TBD` finché non esiste il Payment Link reale.
-4. La pagina prodotto (`/it/catalogo/<id>/` e `/en/catalogo/<id>/`), la sitemap,
+3. **Esegui `npm run og`** per generare la card social `public/og/<id>.png`
+   (va fatto in locale e committato: l'immagine di build Netlify non ha i font
+   giusti; senza PNG la pagina usa `og-default.png` come fallback).
+4. `stripeLink`: lascia `STRIPE_LINK_TBD` finché non esiste il Payment Link reale.
+5. La pagina prodotto (`/it/catalogo/<id>/` e `/en/catalogo/<id>/`), la sitemap,
    hreflang e JSON-LD si generano da soli alla build.
 
 Campi opzionali: `pages/isbn/format` per i libri; `dimensioni/tecnica/tiratura`
@@ -65,8 +68,10 @@ per le stampe d'arte (già tipizzati, non ancora usati).
 
 ## Come aggiungere una categoria
 
-1. Aggiungi `{ slug, it, en }` a `CATEGORIES` in `src/data/books.ts`.
+1. Aggiungi `{ slug, it, en, desc: { it, en } }` a `CATEGORIES` in `src/data/books.ts`
+   (`desc` diventa la meta description della pagina categoria).
 2. Aggiungi l'icona per lo slug in `src/components/CategoryIcon.astro`.
+3. La pagina `/it/categoria/<slug>/` (+ EN) si genera da sola alla build.
 
 ## Come aggiungere una lingua
 
@@ -79,8 +84,10 @@ per le stampe d'arte (già tipizzati, non ancora usati).
 ## Cose da completare prima del lancio
 
 - [ ] `STRIPE_LINK_TBD` / `AMAZON_LINK_TBD` in `src/data/books.ts`
-- [ ] `FORM_ENDPOINT_TBD` in `src/pages/[lang]/contatti.astro`
-      (e aggiungere l'origin dell'endpoint a `form-action` in `public/_headers`)
+- [ ] Netlify Forms: attivare una volta il rilevamento in
+      *Project configuration → Forms → Enable form detection*
+      (i messaggi del form contatti arrivano lì; notifiche email
+      configurabili in *Forms → Notifications*)
 - [ ] Segnaposto `[TODO: …]` nelle pagine legali (`src/pages/[lang]/legale/`)
       e nel footer (ragione sociale, P.IVA) — da rivedere con un consulente
 - [ ] Se si aggiunge analytics o qualunque cookie non tecnico: serve un

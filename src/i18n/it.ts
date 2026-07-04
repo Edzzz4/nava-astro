@@ -59,6 +59,7 @@ export const it = {
 
   /* catalog */
   catpg_title: 'Catalogo', catpg_sub: 'Tutti i titoli Nava, in un posto solo.',
+  cat_other: 'Altre categorie', cat_all_titles: 'Tutti i titoli della collana',
   filter_title: 'Categorie', filter_all: 'Tutte le categorie',
   search_label: 'Cerca nel catalogo', search_ph: 'Cerca titolo o autore…',
   sort_label: 'Ordina', sort_newest: 'Più recenti', sort_price_asc: 'Prezzo crescente',

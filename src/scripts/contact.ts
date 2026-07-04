@@ -1,14 +1,15 @@
 /* ─────────────────────────────────────────────────────────────
-   Contact form island: honeypot + client-side validation.
-   The endpoint is FORM_ENDPOINT_TBD, so submission is always
-   intercepted and the demo success message shown. When the real
-   endpoint exists: set the form `action`, remove the TBD branch,
-   and allow the origin in form-action (public/_headers).
+   Contact form island: honeypot + client validation + AJAX submit
+   to Netlify Forms (same-origin POST, CSP-safe).
+   Progressive enhancement: `novalidate` is added here, so with JS
+   off the browser validates natively and Netlify serves its own
+   success page after the plain POST.
    ───────────────────────────────────────────────────────────── */
 
 function init(): void {
   const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
   if (!form) return;
+  form.setAttribute('novalidate', '');
   const ok = form.querySelector<HTMLElement>('[data-contact-ok]');
   const err = form.querySelector<HTMLElement>('[data-contact-err]');
 
@@ -21,7 +22,7 @@ function init(): void {
     const honeypot = form.querySelector<HTMLInputElement>('input[name="website"]');
     if (honeypot && honeypot.value !== '') return;
 
-    // Client validation (novalidate on the form, so we control UX).
+    // Client validation (novalidate is on, so we control the UX).
     let valid = true;
     for (const field of form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
       '.field[required], .field[type="email"]'
@@ -36,14 +37,23 @@ function init(): void {
       return;
     }
 
-    if (form.action.endsWith('FORM_ENDPOINT_TBD')) {
-      // Demo mode: no backend yet.
-      form.reset();
-      ok?.removeAttribute('hidden');
-      return;
-    }
-
-    form.submit();
+    // Netlify Forms accepts URL-encoded POSTs on any same-origin path.
+    const body = new URLSearchParams(
+      new FormData(form) as unknown as Record<string, string>
+    ).toString();
+    fetch(window.location.pathname, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        ok?.removeAttribute('hidden');
+      })
+      .catch(() => {
+        err?.removeAttribute('hidden');
+      });
   });
 }
 

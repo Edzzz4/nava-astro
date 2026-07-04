@@ -2,8 +2,8 @@
 # The CSP is strict on purpose: every script/style is an external file
 # built by Astro (no 'unsafe-inline'). JSON-LD <script type="application/ld+json">
 # blocks are data, not executable script, so they are unaffected.
-# NOTE: when the real form endpoint replaces FORM_ENDPOINT_TBD, add its
-# origin to form-action (e.g. "form-action 'self' https://formspree.io").
+# The contact form posts same-origin to Netlify Forms, so
+# form-action 'self' and connect-src 'self' already cover it.
 
 /*
   Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests

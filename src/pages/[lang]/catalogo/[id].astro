@@ -37,6 +37,13 @@ const hasIsbn = Boolean(product.isbn && product.isbn !== 'TBD');
 
 const relatedProducts = related(product);
 const metaDescription = `${title} — ${t('meta_book_desc_prefix')} ${product.author}. ${paragraphs[0]!.slice(0, 150)}`;
+const categoryUrl = localePath(lang, `categoria/${product.category}/`);
+
+// Social scrapers don't render SVG: use the pre-generated PNG card
+// (scripts/generate-og.mjs → public/og/<id>.png, committed to the repo).
+// Falls back to the site default if the PNG hasn't been generated yet.
+import { existsSync } from 'node:fs';
+const ogImage = existsSync(`public/og/${product.id}.png`) ? `/og/${product.id}.png` : '/og-default.png';
 
 const specs: { label: string; value: string }[] = [
   ...(product.pages ? [{ label: t('bk_pages'), value: String(product.pages) }] : []),
@@ -78,7 +85,8 @@ const jsonLd = [
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: t('nav_home'), item: new URL(localePath(lang), Astro.site).href },
       { '@type': 'ListItem', position: 2, name: t('nav_catalog'), item: new URL(catalogUrl, Astro.site).href },
-      { '@type': 'ListItem', position: 3, name: title, item: pageUrl },
+      { '@type': 'ListItem', position: 3, name: categoryLabel(product.category, lang), item: new URL(categoryUrl, Astro.site).href },
+      { '@type': 'ListItem', position: 4, name: title, item: pageUrl },
     ],
   },
 ];
@@ -90,7 +98,7 @@ const jsonLd = [
   description={metaDescription}
   active="catalog"
   ogType="book"
-  ogImage={product.cover}
+  {ogImage}
   {jsonLd}
 >
   <div class="container-x page">
@@ -115,7 +123,9 @@ const jsonLd = [
       </div>
 
       <div>
-        <p class="smallcaps text-accent genre">{categoryLabel(product.category, lang)}</p>
+        <p class="smallcaps genre">
+          <a href={categoryUrl} class="genre-link text-accent">{categoryLabel(product.category, lang)}</a>
+        </p>
         <h1 class="serif title">{title}</h1>
         {subtitle && <p class="serif text-muted subtitle"><em>{subtitle}</em></p>}
         <p class="author">{t('bk_author_label')}: <strong>{product.author}</strong></p>
@@ -184,6 +194,8 @@ const jsonLd = [
   .main-cover { max-width: 420px; }
 
   .genre { font-size: var(--text-sm); }
+  .genre-link { border-bottom: 1px solid transparent; transition: border-color var(--speed) var(--ease); }
+  .genre-link:hover { border-bottom-color: var(--accent-text); }
   .title { font-size: var(--text-5xl); margin-top: var(--space-2); }
   .subtitle { font-size: var(--text-xl); margin-top: var(--space-3); }
   .author { margin-top: var(--space-4); font-size: var(--text-lg); }

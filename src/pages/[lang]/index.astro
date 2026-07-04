@@ -63,7 +63,7 @@ const jsonLd = [
     <ul class="cat-grid" role="list">
       {CATEGORIES.map((cat) => (
         <li>
-          <a href={`${localePath(lang, 'catalogo/')}?cat=${cat.slug}`} class="cat-card reveal">
+          <a href={localePath(lang, `categoria/${cat.slug}/`)} class="cat-card reveal">
             <span class="text-accent"><CategoryIcon slug={cat.slug} /></span>
             <h3 class="serif cat-name">{cat[lang]}</h3>
             <span class="text-muted cat-count">{counts.get(cat.slug) ?? 0} {t('cat_count_word')}</span>
