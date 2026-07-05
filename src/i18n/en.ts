@@ -49,6 +49,7 @@ export const en: Dictionary = {
   cat_count_word: 'titles',
   feat_title: 'New releases', feat_sub: "This season's selection, printed in Italy.",
   feat_viewall: 'See the full catalog',
+  shelf_title: 'The shelf', shelf_sub: 'The whole catalog, spine by spine. Pull one out.',
   why_title: 'Why Nava',
   why1_h: 'Curated catalog', why1_p: "Few titles, each chosen one by one. No filler: if it's in the catalog, it earns its shelf.",
   why2_h: 'Independent', why2_p: 'No conglomerate behind us. We decide what to publish based on the books, not the trends.',

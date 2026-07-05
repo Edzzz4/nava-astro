@@ -53,6 +53,19 @@ function initReveal(): void {
   });
 }
 
+/**
+ * Cover morph between pages. The CSP has no 'unsafe-inline', so we can't
+ * use Astro's transition:name (it emits inline <style>). Instead each
+ * cover carries data-vt="cover-<id>" and we set view-transition-name via
+ * CSSOM here — allowed by CSP. Must run on astro:after-swap too: that
+ * fires inside the view transition, before the "new" snapshot is taken.
+ */
+function initVtNames(): void {
+  document.querySelectorAll<HTMLElement>('[data-vt]').forEach((el) => {
+    el.style.viewTransitionName = el.dataset.vt!;
+  });
+}
+
 function initNewsletter(): void {
   const form = document.querySelector<HTMLFormElement>('[data-newsletter]');
   if (!form) return;
@@ -69,4 +82,7 @@ document.addEventListener('astro:page-load', () => {
   initMenu();
   initReveal();
   initNewsletter();
+  initVtNames();
 });
+
+document.addEventListener('astro:after-swap', initVtNames);

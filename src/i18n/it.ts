@@ -50,6 +50,7 @@ export const it = {
   cat_count_word: 'titoli',
   feat_title: 'Ultime uscite', feat_sub: 'Selezione della stagione, stampata in Italia.',
   feat_viewall: 'Vedi tutto il catalogo',
+  shelf_title: 'Lo scaffale', shelf_sub: 'Tutto il catalogo, dorso a dorso. Sfila un libro.',
   why_title: 'Perché Nava',
   why1_h: 'Catalogo curato', why1_p: 'Pochi titoli, scelti uno per uno. Nessun riempitivo: se è in catalogo, vale lo scaffale.',
   why2_h: 'Indipendente', why2_p: 'Nessun grande gruppo dietro di noi. Decidiamo cosa pubblicare in base ai libri, non ai trend.',

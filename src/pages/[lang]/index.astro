@@ -3,6 +3,7 @@
 import Base from '../../layouts/Base.astro';
 import BookCard from '../../components/BookCard.astro';
 import CategoryIcon from '../../components/CategoryIcon.astro';
+import Shelf from '../../components/Shelf.astro';
 import { CATEGORIES, products } from '../../data/books';
 import { LANGUAGES, localePath, useTranslations, type Lang } from '../../i18n';
 
@@ -38,15 +39,16 @@ const jsonLd = [
   active="home"
   {jsonLd}
 >
-  <!-- HERO -->
+  <!-- HERO (entrance is pure CSS: runs before first paint, ends on the
+       final state, instant with prefers-reduced-motion) -->
   <section class="container-x hero">
-    <p class="smallcaps text-muted kicker">{t('hero_kicker')}</p>
+    <p class="smallcaps text-muted kicker hero-fade">{t('hero_kicker')}</p>
     <h1 class="serif hero-title">
-      {t('hero_line1')}<br />
-      <em>{t('hero_line2')}</em>
+      <span class="line"><span class="line-in">{t('hero_line1')}</span></span>
+      <span class="line"><span class="line-in line-2"><em>{t('hero_line2')}</em></span></span>
     </h1>
-    <p class="text-muted hero-sub">{t('hero_sub')}</p>
-    <div class="hero-cta">
+    <p class="text-muted hero-sub hero-fade hero-fade-2">{t('hero_sub')}</p>
+    <div class="hero-cta hero-fade hero-fade-3">
       <a href={localePath(lang, 'catalogo/')} class="btn btn-primary">{t('hero_cta1')}</a>
       <a href={`${localePath(lang, 'catalogo/')}#novita`} class="btn btn-ghost">{t('hero_cta2')}</a>
     </div>
@@ -88,6 +90,11 @@ const jsonLd = [
 
   <hr class="rule container-x" />
 
+  <!-- SHELF -->
+  <Shelf {lang} />
+
+  <hr class="rule container-x" />
+
   <!-- WHY US -->
   <section class="container-x block">
     <h2 class="serif smallcaps block-title why-title">{t('why_title')}</h2>
@@ -99,8 +106,8 @@ const jsonLd = [
           ['03', t('why3_h'), t('why3_p')],
         ] as const
       ).map(([num, heading, text]) => (
-        <div class="reveal">
-          <span class="serif text-accent why-num">{num}</span>
+        <div class="reveal num-block">
+          <span class="giant-num serif" aria-hidden="true">{num}</span>
           <h3 class="serif why-h">{heading}</h3>
           <p class="text-muted why-p">{text}</p>
         </div>
@@ -140,6 +147,22 @@ const jsonLd = [
   .hero-sub { margin-top: var(--space-6); font-size: var(--text-xl); max-width: 46ch; }
   .hero-cta { margin-top: var(--space-7); display: flex; flex-wrap: wrap; gap: var(--space-4); }
 
+  /* Hero entrance: curtain reveal per line + staggered fade-ups. */
+  .line { display: block; overflow: hidden; }
+  .line-in { display: block; animation: hero-rise 620ms var(--ease) both; }
+  .line-2 { animation-delay: 110ms; }
+  .hero-fade { animation: hero-fade 520ms var(--ease) both 260ms; }
+  .hero-fade-2 { animation-delay: 380ms; }
+  .hero-fade-3 { animation-delay: 480ms; }
+  @keyframes hero-rise {
+    from { transform: translateY(105%); }
+    to { transform: translateY(0); }
+  }
+  @keyframes hero-fade {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   .block { padding-top: var(--space-8); padding-bottom: var(--space-8); }
   @media (min-width: 768px) { .block { padding-top: var(--space-9); padding-bottom: var(--space-9); } }
   .block-head {
@@ -177,8 +200,7 @@ const jsonLd = [
   .why-title { margin-bottom: var(--space-7); }
   .why-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
   @media (min-width: 768px) { .why-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-6); } }
-  .why-num { font-size: var(--text-3xl); }
-  .why-h { font-size: var(--text-2xl); margin-top: var(--space-3); }
+  .why-h { font-size: var(--text-2xl); position: relative; }
   .why-p { margin-top: var(--space-2); }
 
   .band { background: var(--band-bg); color: var(--band-fg); }

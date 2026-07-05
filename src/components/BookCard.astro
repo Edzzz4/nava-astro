@@ -31,6 +31,9 @@ const href = localePath(lang, `catalogo/${product.id}/`);
   data-title={title}
 >
   <a href={href} class="card-link">
+    {/* data-vt → view-transition-name set via CSSOM in site.ts (the
+        strict CSP forbids the inline <style> that transition:name emits);
+        the cover then morphs into the product-page cover on navigation */}
     <img
       src={product.cover}
       width="600"
@@ -39,6 +42,7 @@ const href = localePath(lang, `catalogo/${product.id}/`);
       decoding="async"
       class="cover"
       alt={`${t('aria_cover_prefix')} ${title}`}
+      data-vt={`cover-${product.id}`}
     />
     <h3 class="serif title">{title}</h3>
   </a>

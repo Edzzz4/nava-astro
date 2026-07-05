@@ -111,15 +111,21 @@ const jsonLd = [
 
     <article class="product">
       <div class="cover-col">
-        <img
-          src={product.cover}
-          width="600"
-          height="800"
-          loading="eager"
-          decoding="async"
-          class="cover main-cover"
-          alt={`${t('aria_cover_prefix')} ${title}`}
-        />
+        {/* data-tilt: mouse-follow 3D handled by scripts/tilt.ts
+            (desktop pointer only, off with prefers-reduced-motion) */}
+        <div class="tilt" data-tilt>
+          <img
+            src={product.cover}
+            width="600"
+            height="800"
+            loading="eager"
+            decoding="async"
+            class="cover main-cover"
+            alt={`${t('aria_cover_prefix')} ${title}`}
+            data-vt={`cover-${product.id}`}
+          />
+          <span class="sheen" aria-hidden="true"></span>
+        </div>
       </div>
 
       <div>
@@ -179,6 +185,8 @@ const jsonLd = [
       </div>
     </section>
   </div>
+
+  <script src="../../../scripts/tilt.ts"></script>
 </Base>
 
 <style>
@@ -192,6 +200,15 @@ const jsonLd = [
     .cover-col { position: sticky; top: 96px; }
   }
   .main-cover { max-width: 420px; }
+  .tilt {
+    position: relative; display: inline-block; max-width: 420px;
+    transform-style: preserve-3d; will-change: transform;
+  }
+  .sheen {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 0.18) 50%, transparent 65%);
+    transition: opacity var(--speed) var(--ease);
+  }
 
   .genre { font-size: var(--text-sm); }
   .genre-link { border-bottom: 1px solid transparent; transition: border-color var(--speed) var(--ease); }

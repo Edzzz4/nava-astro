@@ -1,0 +1,123 @@
+---
+/**
+ * "Lo scaffale" — the whole catalog as 3D CSS book spines on a shelf.
+ * Hover / focus pulls the book out and turns it to show the cover.
+ * Pure CSS transforms (compositor-only, no JS, no layout shift: each
+ * slot keeps a fixed width and the cover overlays neighbors via
+ * z-index). The spine is a center slice of the cover SVG itself, so
+ * colors always match. On touch the row simply scrolls and taps
+ * navigate. prefers-reduced-motion removes the transition (global rule).
+ */
+import { CATEGORIES, products } from '../data/books';
+import { localePath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// Real shelves group by series: category order, then year.
+const catOrder = new Map(CATEGORIES.map((c, i) => [c.slug, i]));
+const shelved = [...products].sort(
+  (a, b) => (catOrder.get(a.category)! - catOrder.get(b.category)!) || a.year - b.year
+);
+---
+
+<section class="container-x shelf-block">
+  <div class="head">
+    <h2 class="serif smallcaps title">{t('shelf_title')}</h2>
+    <p class="text-muted sub">{t('shelf_sub')}</p>
+  </div>
+
+  <div class="shelf-scroll">
+    <ul class="shelf" role="list">
+      {shelved.map((product) => (
+        <li class="slot">
+          <a
+            class="b3d"
+            href={localePath(lang, `catalogo/${product.id}/`)}
+            aria-label={product.title[lang]}
+          >
+            <img class="spine-img" src={product.cover} alt="" width="42" height="210" loading="lazy" decoding="async" />
+            <span class="spine-shade" aria-hidden="true"></span>
+            <span class="spine-label serif" aria-hidden="true">{product.title[lang]}</span>
+            <img class="front" src={product.cover} alt="" width="158" height="210" loading="lazy" decoding="async" />
+          </a>
+        </li>
+      ))}
+    </ul>
+    <div class="board" aria-hidden="true"></div>
+  </div>
+</section>
+
+<style>
+  .shelf-block { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+  .head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-7);
+  }
+  .title { font-size: var(--text-4xl); }
+  .sub { max-width: 34ch; }
+
+  .shelf-scroll { overflow-x: auto; scroll-snap-type: x proximity; padding-top: 26px; }
+  .shelf {
+    list-style: none; margin: 0; padding: 0 var(--space-4);
+    display: flex; align-items: flex-end; gap: 6px;
+    min-width: min-content;
+  }
+  .slot {
+    perspective: 900px;
+    scroll-snap-align: start;
+    position: relative;
+    z-index: 1;
+  }
+  .slot:hover, .slot:focus-within { z-index: 6; }
+
+  .b3d {
+    position: relative; display: block;
+    width: 42px; height: 210px;
+    transform-style: preserve-3d;
+    transform-origin: left center;
+    transition: transform 350ms var(--ease);
+    outline-offset: 6px;
+  }
+  .spine-img {
+    position: absolute; inset: 0; width: 42px; height: 210px;
+    object-fit: cover; border: 0; display: block;
+  }
+  .spine-shade {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(90deg, rgb(0 0 0 / 0.28), rgb(0 0 0 / 0) 30%, rgb(0 0 0 / 0) 70%, rgb(0 0 0 / 0.22));
+  }
+  .spine-label {
+    position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 14px; writing-mode: vertical-rl;
+    font-size: 0.72rem; letter-spacing: 0.04em; line-height: 1;
+    color: rgb(255 255 255 / 0.92); text-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    pointer-events: none;
+  }
+  /* Front cover hinged on the spine's right edge, folded into the page. */
+  .front {
+    position: absolute; top: 0; left: 42px;
+    width: 158px; height: 210px;
+    object-fit: cover; display: block;
+    transform-origin: left center;
+    transform: rotateY(90deg);
+    box-shadow: 8px 10px 24px rgb(0 0 0 / 0.25);
+  }
+
+  /* Pull the book out and turn it toward the reader. */
+  .b3d:hover, .b3d:focus-visible {
+    transform: translateY(-16px) rotateY(-58deg);
+  }
+
+  .board {
+    height: 12px; margin-top: -1px;
+    background: var(--line);
+    border-top: 1px solid color-mix(in srgb, var(--ink) 22%, var(--line));
+    box-shadow: var(--shadow-sm);
+  }
+</style>

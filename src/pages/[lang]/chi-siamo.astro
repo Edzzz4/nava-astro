@@ -80,8 +80,8 @@ const values = [
     <h2 class="serif smallcaps values-h">{t('ab_values_h')}</h2>
     <div class="values-grid">
       {values.map(([num, heading, text]) => (
-        <div class="reveal">
-          <span class="serif text-accent value-num">{num}</span>
+        <div class="reveal num-block">
+          <span class="giant-num serif" aria-hidden="true">{num}</span>
           <h3 class="serif value-h">{heading}</h3>
           <p class="text-muted value-p">{text}</p>
         </div>
@@ -137,7 +137,6 @@ const values = [
   .values-h { font-size: var(--text-3xl); margin-bottom: var(--space-7); }
   .values-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
   @media (min-width: 768px) { .values-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-6); } }
-  .value-num { font-size: var(--text-3xl); }
-  .value-h { font-size: var(--text-2xl); margin-top: var(--space-3); }
+  .value-h { font-size: var(--text-2xl); }
   .value-p { margin-top: var(--space-2); }
 </style>
