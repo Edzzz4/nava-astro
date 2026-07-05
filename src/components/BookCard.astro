@@ -46,7 +46,7 @@ const href = localePath(lang, `catalogo/${product.id}/`);
     />
     <h3 class="serif title">{title}</h3>
   </a>
-  <p class="smallcaps text-muted category">{categoryLabel(product.category, lang)}</p>
+  <p class="smallcaps text-muted category"><span class="cat-dot" aria-hidden="true"></span>{categoryLabel(product.category, lang)}</p>
   <p class="price">{formatPrice(product.price)}</p>
   <div class="actions">
     <a href={product.stripeLink} class="btn btn-primary btn-sm">{t('buy_now')}</a>

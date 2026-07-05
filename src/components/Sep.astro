@@ -1,0 +1,21 @@
+---
+/**
+ * Section separator — hairline with the short red "Nava dash" in the
+ * middle, echoing the wordmark underline in the favicon / OG image.
+ */
+---
+
+<div class="container-x" role="presentation">
+  <div class="sep"><span class="mark" aria-hidden="true"></span></div>
+</div>
+
+<style>
+  .sep { position: relative; height: 1px; background: var(--line); }
+  .mark {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px; height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+</style>

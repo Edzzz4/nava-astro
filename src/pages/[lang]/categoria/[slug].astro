@@ -64,8 +64,8 @@ const jsonLd = [
       </a>
     </nav>
 
-    <header class="page-head">
-      <span class="text-accent icon"><CategoryIcon slug={category.slug} size={36} /></span>
+    <header class="page-head" data-category={category.slug}>
+      <span class="icon"><CategoryIcon slug={category.slug} size={36} /></span>
       <h1 class="serif page-title">{name}</h1>
       <p class="text-muted page-sub">{description}</p>
       <p class="smallcaps text-muted count">{items.length} {t('results_word')}</p>
@@ -97,7 +97,7 @@ const jsonLd = [
   .back { display: inline-flex; align-items: center; gap: 0.25rem; font-size: var(--text-sm); border-bottom: 0; }
 
   .page-head { margin-bottom: var(--space-7); max-width: 58ch; }
-  .icon { display: inline-block; }
+  .icon { display: inline-block; color: var(--cat, var(--accent-text)); }
   .page-title { font-size: var(--text-5xl); margin-top: var(--space-3); }
   .page-sub { margin-top: var(--space-4); font-size: var(--text-lg); }
   .count { font-size: var(--text-sm); margin-top: var(--space-3); }

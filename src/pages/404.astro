@@ -13,22 +13,69 @@ const tEn = useTranslations('en');
 
 <Base lang="it" title="404 — Nava" description={t('nf_msg')} noindex>
   <div class="container-x wrap">
-    <p class="serif text-accent code">404</p>
-    <h1 class="serif title">{t('nf_title')}</h1>
-    <p class="text-muted msg">{t('nf_msg')}</p>
-    <p class="text-muted msg-en" lang="en"><em>{tEn('nf_msg')}</em></p>
-    <div class="cta">
-      <a href="/it/" class="btn btn-primary">{t('nf_home')}</a>
-      <a href="/it/catalogo/" class="btn btn-ghost">{t('nf_catalog')}</a>
+    <div class="cols">
+      <div>
+        <p class="serif text-accent code">404</p>
+        <h1 class="serif title">{t('nf_title')}</h1>
+        <p class="text-muted msg">{t('nf_msg')}</p>
+        <p class="text-muted msg-en" lang="en"><em>{tEn('nf_msg')}</em></p>
+        <div class="cta">
+          <a href="/it/" class="btn btn-primary">{t('nf_home')}</a>
+          <a href="/it/catalogo/" class="btn btn-ghost">{t('nf_catalog')}</a>
+        </div>
+      </div>
+
+      <!-- The shelf where this page should have been: one book has fallen. -->
+      <div class="scene" aria-hidden="true">
+        <div class="bk up bk-1"></div>
+        <div class="bk up bk-2"></div>
+        <div class="bk lean"></div>
+        <div class="bk up bk-3"></div>
+        <div class="bk fallen"></div>
+        <div class="board"></div>
+      </div>
     </div>
   </div>
 </Base>
 
 <style>
   .wrap { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; padding-top: var(--space-9); padding-bottom: var(--space-9); }
+  .cols { display: grid; grid-template-columns: 1fr; gap: var(--space-8); align-items: center; }
+  @media (min-width: 900px) { .cols { grid-template-columns: 1fr 380px; } }
   .code { font-size: clamp(5rem, 18vw, 12rem); line-height: 1; }
   .title { font-size: var(--text-5xl); margin-top: var(--space-4); max-width: 18ch; }
   .msg { font-size: var(--text-lg); margin-top: var(--space-4); max-width: 40ch; }
   .msg-en { font-size: var(--text-sm); margin-top: var(--space-2); }
   .cta { margin-top: var(--space-7); display: flex; flex-wrap: wrap; gap: var(--space-4); }
+
+  /* Fallen-book vignette: pure CSS, no assets. */
+  .scene {
+    position: relative; height: 240px; max-width: 380px;
+    display: none; perspective: 900px;
+  }
+  @media (min-width: 900px) { .scene { display: block; } }
+  .bk { position: absolute; bottom: 14px; border-radius: 2px; }
+  .up { width: 34px; height: 170px; }
+  .bk-1 { left: 40px; background: #6e7f4c; height: 180px; }
+  .bk-2 { left: 78px; background: #3a5470; height: 162px; }
+  .bk-3 { left: 148px; background: #43395c; height: 174px; }
+  .lean {
+    left: 112px; width: 34px; height: 168px; background: #b98226;
+    transform-origin: bottom right; transform: rotate(9deg);
+  }
+  .fallen {
+    left: 196px; width: 128px; height: 30px; background: var(--accent);
+    transform: rotate(-4deg); transform-origin: bottom left;
+    box-shadow: var(--shadow-md);
+  }
+  .bk::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(90deg, rgb(0 0 0 / 0.25), rgb(255 255 255 / 0.06) 30%, rgb(0 0 0 / 0.12));
+  }
+  .fallen::after { background: linear-gradient(180deg, rgb(255 255 255 / 0.10), rgb(0 0 0 / 0.22)); }
+  .board {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 14px;
+    background: var(--line);
+    border-top: 1px solid color-mix(in srgb, var(--ink) 22%, var(--line));
+  }
 </style>

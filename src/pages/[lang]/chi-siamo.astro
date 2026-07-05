@@ -1,6 +1,7 @@
 ---
 /** About page — story, mission band, team, values. */
 import Base from '../../layouts/Base.astro';
+import Sep from '../../components/Sep.astro';
 import { LANGUAGES, useTranslations, type Lang } from '../../i18n';
 
 export function getStaticPaths() {
@@ -29,12 +30,12 @@ const values = [
     <p class="serif text-muted lead-sub"><em>{t('ab_lead')}</em></p>
   </section>
 
-  <hr class="rule container-x" />
+  <Sep />
 
   <!-- Story -->
   <section class="container-x story">
     <h2 class="serif story-h">{t('ab_story_h')}</h2>
-    <div class="prose story-body">
+    <div class="prose prose-dropcap story-body">
       <p>{t('ab_story_p1')}</p>
       <p>{t('ab_story_p2')}</p>
     </div>
@@ -42,6 +43,7 @@ const values = [
 
   <!-- Mission band -->
   <section class="band">
+    <span class="band-glyph serif" aria-hidden="true">N</span>
     <div class="container-x band-inner">
       <h2 class="serif smallcaps band-kicker">{t('ab_mission_h')}</h2>
       <p class="serif band-text">{t('ab_mission_p')}</p>
@@ -73,7 +75,7 @@ const values = [
     </div>
   </section>
 
-  <hr class="rule container-x" />
+  <Sep />
 
   <!-- Values -->
   <section class="container-x values">
@@ -105,7 +107,14 @@ const values = [
   .story-h { font-size: var(--text-3xl); }
   .story-body { font-size: var(--text-lg); }
 
-  .band { background: var(--band-bg); color: var(--band-fg); }
+  .band { background: var(--band-bg); color: var(--band-fg); position: relative; overflow: hidden; }
+  .band-glyph {
+    position: absolute; right: -0.06em; bottom: -0.32em;
+    font-size: 24rem; line-height: 1; font-weight: 600;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--band-fg) 14%, transparent);
+    pointer-events: none; user-select: none;
+  }
   .band-inner { padding-top: var(--space-9); padding-bottom: var(--space-9); max-width: 60rem; margin-right: auto; }
   .band-kicker { font-size: var(--text-sm); color: var(--band-muted); }
   .band-text { font-size: var(--text-4xl); line-height: 1.2; margin-top: var(--space-5); color: var(--band-fg); }

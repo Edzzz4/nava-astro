@@ -219,6 +219,44 @@ body::after {
   body::after { opacity: 0.06; }
 }
 
+/* ── Category colors (Adelphi-style series system) ──────────
+   Used by the .cat-dot chips on cards, the icons on home/category
+   pages. Decorative only (labels keep their own contrast).
+   EXTENSION POINT — add a category: add a rule here (slug must
+   match CATEGORIES in src/data/books.ts). */
+[data-category='libri-per-bambini'] { --cat: #b98226; }
+[data-category='humor-e-regali'] { --cat: #c05b4d; }
+[data-category='informatica-web-digital'] { --cat: #3a5470; }
+[data-category='affari-e-finanza'] { --cat: #6e7f4c; }
+[data-category='cookbook'] { --cat: #a34a2a; }
+[data-category='fai-da-te'] { --cat: #7a6248; }
+[data-category='graphic-novel-fumetti'] { --cat: #43395c; }
+[data-category='pillole-di'] { --cat: #8a2e3b; }
+[data-category='tempo-libero-lifestyle'] { --cat: #3e7c74; }
+@media (prefers-color-scheme: dark) {
+  [data-category='informatica-web-digital'] { --cat: #6d89a8; }
+  [data-category='graphic-novel-fumetti'] { --cat: #7d719e; }
+  [data-category='pillole-di'] { --cat: #b25864; }
+}
+.cat-dot {
+  display: inline-block; width: 9px; height: 9px;
+  background: var(--cat, var(--accent));
+  border-radius: 1.5px; margin-right: 0.45rem;
+  vertical-align: 6%;
+}
+
+/* ── Editorial drop cap (product description, about story) ─── */
+.prose-dropcap > p:first-child::first-letter {
+  font-family: var(--font-serif);
+  font-size: 3.1em;
+  line-height: 0.83;
+  float: left;
+  padding-right: 0.09em;
+  margin-top: 0.04em;
+  font-weight: 500;
+  color: var(--accent-text);
+}
+
 /* ── Giant outline section numerals (home "why", about values) ── */
 .num-block { position: relative; padding-top: 3.4rem; }
 .giant-num {
