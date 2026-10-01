@@ -25,3 +25,13 @@ pnpm-debug.log*
 
 # local tooling
 .claude/
+
+# Book files (PDF/EPUB) must NEVER be committed: this repo is public.
+# They live in Netlify Blobs, uploaded from ~/Desktop/nava-libri.
+*.pdf
+*.epub
+*.mobi
+*.azw3
+
+# Netlify CLI local state
+.netlify/
