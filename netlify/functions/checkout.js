@@ -7,7 +7,7 @@
    in session.consent, stripe-webhook.js copies it into the order. */
 import { CURRENCIES, productById } from '../../src/data/books.ts';
 import { companyIncomplete } from '../../src/data/company.ts';
-import { json, requestOrigin, stripeClient } from '../lib/site.js';
+import { guarded, isProduction, json, requestOrigin, stripeClient } from '../lib/site.js';
 
 /** Bump when the consent text changes: stored with every order. */
 const CONSENT_VERSION = '2026-10-02';
@@ -25,7 +25,7 @@ const COPY = {
   },
 };
 
-export default async (req) => {
+export default guarded(async (req, context) => {
   if (req.method !== 'POST') return json({ error: 'method' }, 405, { Allow: 'POST' });
 
   // Same-origin only: the buy button is on our own product pages.
@@ -40,7 +40,8 @@ export default async (req) => {
   }
   // No live sales while the seller's legal data are placeholders
   // (footer, terms and the delivery email show them to the buyer).
-  if (process.env.CONTEXT === 'production' && companyIncomplete()) {
+  const production = isProduction(req, context);
+  if (production && companyIncomplete()) {
     console.error('checkout: src/data/company.ts still has [TODO] fields — sales disabled');
     return json({ error: 'unavailable' }, 503);
   }
@@ -50,17 +51,17 @@ export default async (req) => {
   if (!product || !CURRENCIES.includes(currency)) return json({ error: 'input' }, 400);
 
   try {
-    return await createSession(origin, product, currency);
+    return await createSession(origin, product, currency, production);
   } catch (err) {
     // Stripe or config error: log the details, give the page a generic error.
     console.error('checkout: failed', err?.type ?? '', err?.code ?? '', err?.message ?? err);
     return json({ error: 'stripe' }, 502);
   }
-};
+});
 
-async function createSession(origin, product, currency) {
+async function createSession(origin, product, currency, production) {
   const lang = product.lang;
-  const stripe = stripeClient();
+  const stripe = stripeClient({ production });
   const lookupKey = product.stripe.lookupKeys[currency];
   const { data } = await stripe.prices.list({ lookup_keys: [lookupKey], active: true, limit: 1 });
   const price = data[0];

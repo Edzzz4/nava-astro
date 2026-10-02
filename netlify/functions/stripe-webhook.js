@@ -8,15 +8,16 @@
    Idempotent: Stripe retries, and a session already delivered is skipped. */
 import { productById } from '../../src/data/books.ts';
 import { deliveryEmail, sendEmail } from '../lib/email.js';
-import { stripeClient, trustedOrigin } from '../lib/site.js';
+import { guarded, isProduction, stripeClient, trustedOrigin } from '../lib/site.js';
 import { getOrder, saveOrder } from '../lib/stores.js';
 import { TTL_HOURS, signToken } from '../lib/token.js';
 
 const PAID_EVENTS = new Set(['checkout.session.completed', 'checkout.session.async_payment_succeeded']);
 
-export default async (req) => {
+// Errors → 500 without details: Stripe retries, the cause is in the function log.
+export default guarded(async (req, context) => {
   if (req.method !== 'POST') return new Response('method', { status: 405 });
-  const stripe = stripeClient();
+  const stripe = stripeClient({ production: isProduction(req, context) });
 
   let event;
   try {
@@ -43,7 +44,7 @@ export default async (req) => {
 
   await fulfill(stripe, session, event.created);
   return new Response('ok', { status: 200 });
-};
+}, () => new Response('error', { status: 500 }));
 
 /** paidAt: the event time, i.e. when the buyer completed payment (and consent). */
 async function fulfill(stripe, session, paidAt) {

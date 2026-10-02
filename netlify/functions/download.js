@@ -7,7 +7,7 @@
    downloads. A refused POST redirects (303) to the download page with
    ?e=<code>, keeping the token in the fragment. */
 import { productById } from '../../src/data/books.ts';
-import { json } from '../lib/site.js';
+import { guarded, json } from '../lib/site.js';
 import { booksStore, getOrder, saveOrder } from '../lib/stores.js';
 import { MAX_DOWNLOADS, verifyToken } from '../lib/token.js';
 
@@ -23,11 +23,11 @@ async function check(token) {
   return { order, exp: v.payload.exp };
 }
 
-export default async (req) => {
+export default guarded(async (req) => {
   if (req.method === 'GET') return status(req);
   if (req.method === 'POST') return deliver(req);
   return json({ error: 'method' }, 405, { Allow: 'GET, POST' });
-};
+});
 
 async function status(req) {
   const { order, exp, error } = await check(new URL(req.url).searchParams.get('t'));
