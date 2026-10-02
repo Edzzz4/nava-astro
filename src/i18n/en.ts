@@ -9,7 +9,7 @@ export const en: Dictionary = {
   /* meta */
   site_name: 'Nava',
   meta_home_title: 'Nava — Books worth shelf space',
-  meta_home_desc: 'Nava, an independent publisher. A curated catalog, every book a gift-quality object, printed in Italy.',
+  meta_home_desc: 'Nava, an independent publisher. Curated ebooks in PDF and EPUB, ready to download.',
   meta_catalog_title: 'Catalog — Nava',
   meta_catalog_desc: 'The full Nava catalog: filter by category, search and sort every title.',
   meta_about_title: 'About — Nava',
@@ -29,12 +29,12 @@ export const en: Dictionary = {
 
   /* nav + footer */
   nav_home: 'Home', nav_catalog: 'Catalog', nav_about: 'About', nav_contact: 'Contact',
-  foot_tag: 'Books worth shelf space. Independent publisher, printed in Italy.',
+  foot_tag: 'Books worth shelf space. Independent publisher.',
   foot_catalog: 'Catalog', foot_about: 'About', foot_contact: 'Contact',
   foot_privacy: 'Privacy', foot_cookies: 'Cookie Policy', foot_terms: 'Terms of sale',
-  foot_withdrawal: 'Right of withdrawal', foot_shipping: 'Shipping & returns',
+  foot_withdrawal: 'Right of withdrawal', foot_shipping: 'Digital delivery',
   foot_rights: 'All rights reserved.',
-  foot_vat: 'VAT no. [TODO]',
+  foot_vat: 'VAT (BTW) no.', foot_kvk: 'Chamber of Commerce (KvK) no.',
 
   /* shared buy buttons */
   buy_now: 'Buy now', buy_amazon: 'Buy on Amazon',
@@ -43,18 +43,18 @@ export const en: Dictionary = {
   /* home */
   hero_kicker: 'Independent publisher · since 2019',
   hero_line1: 'Books worth', hero_line2: 'shelf space.',
-  hero_sub: 'A catalog curated book by book. Every title printed in Italy and made as an object to keep — or to give.',
+  hero_sub: 'A catalog curated book by book. Ebooks in PDF and EPUB: download them right away and read them anywhere.',
   hero_cta1: 'Explore catalog', hero_cta2: 'New releases',
-  cat_title: 'Category index', cat_sub: 'Nine ways into the catalog.',
+  cat_title: 'Category index', cat_sub: 'Our books, by subject.',
   cat_count_word: 'titles',
-  feat_title: 'New releases', feat_sub: "This season's selection, printed in Italy.",
+  feat_title: 'New releases', feat_sub: 'Our latest books.',
   feat_viewall: 'See the full catalog',
   shelf_title: 'The shelf', shelf_sub: 'The whole catalog, spine by spine. Pull one out.',
   why_title: 'Why Nava',
   why1_h: 'Curated catalog', why1_p: "Few titles, each chosen one by one. No filler: if it's in the catalog, it earns its shelf.",
   why2_h: 'Independent', why2_p: 'No conglomerate behind us. We decide what to publish based on the books, not the trends.',
-  why3_h: 'Printed in Italy', why3_p: 'Quality paper, binding and print from Italian presses. Objects made to last.',
-  nl_title: 'Stay on the shelf.', nl_sub: 'One email a month: new releases, reprints, no noise.',
+  why3_h: 'Yours right away', why3_p: 'DRM-free PDF and EPUB, ready to download as soon as you pay, for computer, tablet and e-reader.',
+  nl_title: 'Stay on the shelf.', nl_sub: 'One email a month: new releases and new editions, no noise.',
   nl_label: 'Email address', nl_ph: 'Your email', nl_btn: 'Subscribe',
 
   /* catalog */
@@ -78,20 +78,20 @@ export const en: Dictionary = {
   ab_kicker: 'About', ab_title: 'A small publisher, on purpose.',
   ab_lead: 'Nava was founded in 2019 by two stubborn readers convinced that a book should earn the space it takes up.',
   ab_story_h: 'Our story',
-  ab_story_p1: 'We started in a room with two desks and a pile of manuscripts no one else wanted. We were looking for books that felt necessary, not just sellable — and we wanted them printed well, on paper that lasts.',
+  ab_story_p1: 'We started in a room with two desks and a pile of manuscripts no one else wanted. We were looking for books that felt necessary, not just sellable — and we wanted them done well: clear, precise, made to be used.',
   ab_story_p2: "Today we publish a few dozen titles a year across nine series. We still read every manuscript to the end, and still say no almost every time. That's how the catalog stays curated.",
   ab_mission_h: 'Our mission',
-  ab_mission_p: 'Publish less, but better. Treat every book as a gift-quality object: good to hold, made to stay on the shelf.',
+  ab_mission_p: 'Publish less, but better. Practical, clear books with every fact in its place.',
   ab_team_h: 'The people', ab_team_sub: 'Two partners, no marketing department.',
   ab_team_photo_ph: 'Duo photo coming soon',
   ed_name: 'Edoardo', ed_role: 'Co-founder · Editorial',
   ed_bio: 'Chooses the titles, works with the authors, and reads too late at night. Before Nava he spent ten years in trade publishing.',
   lu_name: 'Luca', lu_role: 'Co-founder · Production & design',
-  lu_bio: "Looks after paper, print and covers. A former typesetter, he's convinced the white of a page matters as much as the text.",
+  lu_bio: '[TODO: real role and background]',
   ab_values_h: 'What we hold to',
   v1_h: "Curate, don't accumulate", v1_p: 'Better ten right books than a hundred random ones.',
   v2_h: 'Independence', v2_p: 'No shareholders to answer to but our readers.',
-  v3_h: 'Made in Italy', v3_p: 'Print and binding from presses we know by name.',
+  v3_h: 'Checked facts', v3_p: 'Temperatures, doses and safety notes checked against official sources.',
 
   /* contact */
   ct_kicker: 'Contact', ct_title: 'Get in touch.',

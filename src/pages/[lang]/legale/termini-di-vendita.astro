@@ -1,44 +1,85 @@
 ---
-/** Terms of sale — structural placeholder, NOT legal advice. */
+/**
+ * Terms of sale for ebooks sold by a Dutch company.
+ * DRAFT to be validated by a person — NOT legal advice. Company data comes
+ * from src/data/company.ts; the other "[TODO: …]" are decisions still open.
+ * Linked from the consent checkbox in Stripe Checkout (checkout.js).
+ */
 import Legal from '../../../layouts/Legal.astro';
-import { LANGUAGES, type Lang } from '../../../i18n';
+import { COMPANY } from '../../../data/company';
+import { LANGUAGES, localePath, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
   return LANGUAGES.map((lang) => ({ params: { lang } }));
 }
 const lang = Astro.params.lang as Lang;
+const C = COMPANY;
 ---
 
-<Legal {lang} title="Termini di vendita" description="Condizioni generali di vendita dei prodotti Nava.">
-  <h2>1. Venditore</h2>
+<Legal {lang} title="Termini di vendita" description="Condizioni di vendita degli ebook Nava: prezzi, pagamento, consegna, recesso e reclami.">
+  <h2>1. Chi vende</h2>
   <p>
-    I prodotti sono venduti da [TODO: ragione sociale], con sede in [TODO: indirizzo],
-    P.IVA [TODO: P.IVA], iscritta al registro imprese di [TODO: provincia].
+    Gli ebook venduti su navaeditore.com sono offerti da {C.legalName}, {C.legalForm}, con sede in {C.address}, {C.country.it}, iscritta alla Camera di commercio olandese (KvK) con il numero {C.kvk},
+    partita IVA {C.vat}. Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
   </p>
 
-  <h2>2. Prodotti e prezzi</h2>
+  <h2>2. Cosa vendiamo</h2>
   <p>
-    I prezzi indicati sul sito sono in euro e comprensivi di IVA. Il prezzo applicato è
-    quello visibile al momento dell'ordine. [TODO: specificare eventuali costi di
-    spedizione e soglie di gratuità.]
+    Libri digitali (ebook). Ogni acquisto comprende il file PDF e il file EPUB della stessa edizione,
+    nella lingua indicata sulla pagina del libro. I file non hanno DRM. Per leggerli servono un lettore
+    PDF e, per l'EPUB, un e-reader o un'app che apra file EPUB.
   </p>
 
-  <h2>3. Ordini e pagamento</h2>
+  <h2>3. Uso consentito</h2>
   <p>
-    L'acquisto avviene tramite il circuito di pagamento indicato in ogni scheda prodotto
-    (Stripe). Il contratto si intende concluso alla conferma dell'ordine.
-    [TODO: dettagliare la procedura d'ordine e la conferma via email.]
+    Con l'acquisto ricevi una licenza personale e non esclusiva: puoi leggere l'ebook sui tuoi
+    dispositivi e stamparne pagine per uso personale. Non puoi rivendere, condividere pubblicamente o
+    distribuire i file, in tutto o in parte. I diritti d'autore restano a [TODO: titolare dei diritti].
   </p>
 
-  <h2>4. Consegna</h2>
-  <p>[TODO: tempi, corrieri e aree di consegna — vedi anche la pagina Spedizioni e resi.]</p>
-
-  <h2>5. Garanzia legale</h2>
+  <h2>4. Prezzi</h2>
   <p>
-    Ai prodotti si applica la garanzia legale di conformità prevista dal Codice del
-    Consumo (D.lgs. 206/2005). [TODO: verificare formulazione con un consulente.]
+    I prezzi sono indicati sulla pagina di ogni libro in euro, dollari USA e sterline. In euro e in
+    sterline il prezzo comprende l'IVA. In dollari il prezzo è al netto delle imposte, che si aggiungono
+    quando sono dovute. Prima di pagare la pagina di pagamento mostra l'importo totale, imposte
+    comprese: vale quell'importo.
   </p>
 
-  <h2>6. Legge applicabile e foro</h2>
-  <p>[TODO: legge applicabile e foro competente, con salvezza del foro del consumatore.]</p>
+  <h2>5. Ordine e pagamento</h2>
+  <p>
+    Il pagamento avviene su una pagina di Stripe con i metodi mostrati alla cassa. Non riceviamo né
+    conserviamo i dati della tua carta. Il contratto si conclude quando il pagamento è confermato.
+  </p>
+
+  <h2>6. Consegna</h2>
+  <p>
+    Subito dopo il pagamento ricevi un'email con il link per scaricare il PDF e l'EPUB. Il link vale
+    72 ore e permette 5 download per ciascun file. Salva i file sul tuo dispositivo. Se il link scade o
+    non funziona, scrivi a <a href={`mailto:${C.email}`}>{C.email}</a> e ti mandiamo un nuovo link
+    [TODO: entro quanti giorni, e fino a quando dopo l'acquisto]. Dettagli nella pagina <a href={localePath(lang, 'legale/consegna/')}>Consegna digitale</a>.
+  </p>
+
+  <h2>7. Diritto di recesso</h2>
+  <p>
+    Gli ebook vengono consegnati subito. Per questo, prima del pagamento, ti chiediamo di acconsentire
+    espressamente all'inizio immediato della consegna e di riconoscere che così perdi il diritto di
+    recesso di 14 giorni. Ti confermiamo il consenso nell'email di consegna. I dettagli sono nella pagina <a href={localePath(lang, 'legale/recesso/')}>Diritto di recesso</a>.
+  </p>
+
+  <h2>8. File difettosi</h2>
+  <p>
+    Gli ebook devono corrispondere alla descrizione e aprirsi con i programmi indicati al punto 2. Se un
+    file è danneggiato o non si apre, scrivici: lo correggiamo o lo sostituiamo. Se non è possibile, ti
+    rimborsiamo.
+  </p>
+
+  <h2>9. Legge applicabile e reclami</h2>
+  <p>
+    Si applica la legge olandese. Se sei un consumatore residente in un altro paese, conservi la
+    protezione delle norme del tuo paese che non si possono derogare per contratto. Per un reclamo scrivi a <a href={`mailto:${C.email}`}>{C.email}</a>: rispondiamo entro [TODO: numero] giorni lavorativi.
+    [TODO: eventuale organismo di risoluzione alternativa delle controversie a cui Nava aderisce.]
+  </p>
+
+  <h2>10. Modifiche</h2>
+  <p>A ogni acquisto si applicano i termini pubblicati in quel momento.</p>
 </Legal>

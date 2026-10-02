@@ -6,6 +6,7 @@
    delivery + loss of the 14-day withdrawal right); Stripe records it
    in session.consent, stripe-webhook.js copies it into the order. */
 import { CURRENCIES, productById } from '../../src/data/books.ts';
+import { companyIncomplete } from '../../src/data/company.ts';
 import { json, requestOrigin, stripeClient } from '../lib/site.js';
 
 /** Bump when the consent text changes: stored with every order. */
@@ -37,6 +38,13 @@ export default async (req) => {
   } catch {
     return json({ error: 'body' }, 400);
   }
+  // No live sales while the seller's legal data are placeholders
+  // (footer, terms and the delivery email show them to the buyer).
+  if (process.env.CONTEXT === 'production' && companyIncomplete()) {
+    console.error('checkout: src/data/company.ts still has [TODO] fields — sales disabled');
+    return json({ error: 'unavailable' }, 503);
+  }
+
   const product = productById(String(body?.product ?? ''));
   const currency = String(body?.currency ?? '');
   if (!product || !CURRENCIES.includes(currency)) return json({ error: 'input' }, 400);

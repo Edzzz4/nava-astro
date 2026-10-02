@@ -78,4 +78,10 @@
   to = "/it/catalogo/"
   status = 301
 
+# Ebooks only: "Spedizioni e resi" became "Consegna digitale".
+[[redirects]]
+  from = "/:lang/legale/spedizioni-e-resi/"
+  to = "/:lang/legale/consegna/"
+  status = 301
+
 # Custom 404: Netlify automatically serves dist/404.html for misses.

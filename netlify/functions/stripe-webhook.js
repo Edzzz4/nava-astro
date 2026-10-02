@@ -41,11 +41,12 @@ export default async (req) => {
   // deliver on async_payment_succeeded instead.
   if (session.payment_status === 'unpaid') return new Response('not paid yet', { status: 200 });
 
-  await fulfill(stripe, session);
+  await fulfill(stripe, session, event.created);
   return new Response('ok', { status: 200 });
 };
 
-async function fulfill(stripe, session) {
+/** paidAt: the event time, i.e. when the buyer completed payment (and consent). */
+async function fulfill(stripe, session, paidAt) {
   const existing = await getOrder(session.id);
   if (existing?.emailSentAt) return;
 
@@ -70,7 +71,7 @@ async function fulfill(stripe, session) {
     consent: {
       termsOfService: session.consent?.terms_of_service ?? 'missing',
       version: session.metadata?.consent_version ?? 'unknown',
-      at: new Date(session.created * 1000).toISOString(),
+      at: new Date(paidAt * 1000).toISOString(),
     },
   };
   if (order.consent.termsOfService !== 'accepted') {
@@ -89,13 +90,18 @@ async function fulfill(stripe, session) {
   }
 
   const token = signToken({ o: order.id, exp: Math.floor(Date.parse(order.expires) / 1000) });
-  const link = `${trustedOrigin(session.metadata?.site)}/${order.lang}/download/#t=${token}`;
+  const site = trustedOrigin(session.metadata?.site);
+  const link = `${site}/${order.lang}/download/#t=${token}`;
   const mail = deliveryEmail({
     lang: order.lang,
     title: product.title,
     link,
     expires: order.expires,
     orderRef: order.id.slice(-10),
+    amount: order.amount,
+    currency: order.currency,
+    consentAt: order.consent.at,
+    site,
   });
   await sendEmail({ to: email, ...mail, idempotencyKey: `delivery-${order.id}` });
 

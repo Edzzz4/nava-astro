@@ -21,6 +21,10 @@ const categories = activeCategories(lang);
 for (const p of editions) counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
 const featured = editions.filter((p) => p.featured).slice(0, 6);
 
+// The newsletter form is a demo (no provider yet: site.ts discards the email).
+// Hidden so visitors don't believe they subscribed; set true once it's wired.
+const SHOW_NEWSLETTER = false;
+
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -118,7 +122,8 @@ const jsonLd = [
     </div>
   </section>
 
-  <!-- NEWSLETTER -->
+  <!-- NEWSLETTER (hidden until a real provider exists) -->
+  {SHOW_NEWSLETTER && (
   <section class="band">
     <span class="band-glyph serif" aria-hidden="true">N</span>
     <div class="container-x band-inner">
@@ -140,6 +145,7 @@ const jsonLd = [
       </form>
     </div>
   </section>
+  )}
 </Base>
 
 <style>

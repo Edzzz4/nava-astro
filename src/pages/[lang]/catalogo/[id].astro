@@ -55,6 +55,9 @@ const offers = CURRENCIES.map((c) => ({
   note: taxNote(c),
 }));
 
+// No real sample pages yet: the preview box stays hidden until there are.
+const SHOW_PREVIEW = false;
+
 const relatedProducts = related(product);
 const metaDescription = `${title}: ${subtitle}. ${product.lead}`.slice(0, 160);
 const categoryUrl = localePath(lang, `categoria/${product.category}/`);
@@ -210,7 +213,7 @@ const jsonLd = [
       </div>
     </article>
 
-    <section class="desc-block">
+    <section class:list={['desc-block', { 'with-preview': SHOW_PREVIEW }]}>
       <div class="prose prose-dropcap desc">
         <p><strong>{product.lead}</strong></p>
         {product.description.map((p) => <p>{p}</p>)}
@@ -219,12 +222,14 @@ const jsonLd = [
         </ul>
         {product.closing.map((p) => <p>{p}</p>)}
       </div>
-      <aside class="preview reveal">
-        <div class="preview-box">
-          <h2 class="serif preview-h">{t('bk_preview_title')}</h2>
-          <div class="preview-ph text-muted">{t('bk_preview_msg')}</div>
-        </div>
-      </aside>
+      {SHOW_PREVIEW && (
+        <aside class="preview reveal">
+          <div class="preview-box">
+            <h2 class="serif preview-h">{t('bk_preview_title')}</h2>
+            <div class="preview-ph text-muted">{t('bk_preview_msg')}</div>
+          </div>
+        </aside>
+      )}
     </section>
 
     {relatedProducts.length > 0 && (
@@ -294,7 +299,10 @@ const jsonLd = [
   .other-ed { margin-top: var(--space-5); font-size: var(--text-sm); }
 
   .desc-block { margin-top: var(--space-8); display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
-  @media (min-width: 768px) { .desc-block { grid-template-columns: 1fr 320px; margin-top: var(--space-9); } }
+  @media (min-width: 768px) {
+    .desc-block { margin-top: var(--space-9); }
+    .desc-block.with-preview { grid-template-columns: 1fr 320px; }
+  }
   .desc { font-size: var(--text-lg); }
   .preview-box { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: var(--space-5); background: var(--surface); }
   .preview-h { font-size: var(--text-xl); }
