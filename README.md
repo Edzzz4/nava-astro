@@ -64,7 +64,7 @@ una pagina solo nella sua lingua, un Product Stripe, i suoi file.
 2. Copertina in `public/covers/<id>.jpg`, 600 × 960 (rapporto 1:1,6).
 3. `npm run og` per la card social `public/og/<id>.png` (in locale, poi commit).
 4. `npm run stripe:setup` (dry run) e poi `npm run stripe:setup -- --apply`:
-   crea Product e Price (EUR, USD, GBP) con le chiavi di `.env`.
+   crea Product e Price (EUR, USD; niente GBP, vedi `CLAUDE.md`) con le chiavi di `.env`.
 5. `npm run books:upload` e poi `npm run books:upload -- --apply`: carica PDF
    ed EPUB da `~/Desktop/nava-libri/releases/<versione>/` nello store privato
    Netlify Blobs `books`. **I file non entrano mai nel repo** (è pubblico).

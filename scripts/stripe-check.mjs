@@ -94,6 +94,9 @@ for (const p of products) {
     else if (pr.unit_amount !== want || pr.currency !== c.toLowerCase() || pr.tax_behavior !== tb || pr.product !== prod.id)
       issues.push(`${c} ${pr.unit_amount}/${pr.tax_behavior} ≠ ${want}/${tb}`);
   }
+  const { data: active } = await stripe.prices.list({ product: prod.id, active: true, limit: 100 });
+  const extra = active.filter((x) => !CURRENCIES.includes(x.currency.toUpperCase()));
+  if (extra.length) issues.push(`active prices in currencies not sold: ${extra.map((x) => x.currency.toUpperCase()).join(', ')} (archive them)`);
   issues.length ? bad(`${p.stripe.product}: ${issues.join('; ')}`) : ok(`${p.stripe.product}: product + ${CURRENCIES.join('/')} prices match`);
 }
 

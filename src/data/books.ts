@@ -89,19 +89,23 @@ export const CATEGORIES = [
 
 export type CategorySlug = (typeof CATEGORIES)[number]['slug'];
 
-/** Currencies sold on the site. Each one is a separate Stripe Price. */
-export const CURRENCIES = ['EUR', 'USD', 'GBP'] as const;
+/**
+ * Currencies sold on the site. Each one is a separate Stripe Price.
+ * No GBP: UK consumer sales need UK VAT registration from the first sale,
+ * so until then UK buyers go through Amazon (nava-libri/CLAUDE.md).
+ */
+export const CURRENCIES = ['EUR', 'USD'] as const;
 export type Currency = (typeof CURRENCIES)[number];
 
 /** Currency preselected on the product page, by site language. */
 export const DEFAULT_CURRENCY: Record<Lang, Currency> = { it: 'EUR', en: 'USD' };
 
 /**
- * Stripe tax_behavior per currency: EUR and GBP prices include VAT,
+ * Stripe tax_behavior per currency: EUR prices include VAT,
  * USD prices are before tax (US convention). scripts/stripe-setup.mjs
  * creates the Prices with exactly these settings.
  */
-export const TAX_INCLUSIVE: Record<Currency, boolean> = { EUR: true, USD: false, GBP: true };
+export const TAX_INCLUSIVE: Record<Currency, boolean> = { EUR: true, USD: false };
 
 /** Stripe Tax code: "Digital Books - downloaded - non subscription - with permanent rights". */
 export const STRIPE_TAX_CODE = 'txcd_10302000';
@@ -148,7 +152,7 @@ export interface Product {
 function stripeIds(id: string): Product['stripe'] {
   return {
     product: id,
-    lookupKeys: { EUR: `${id}_eur`, USD: `${id}_usd`, GBP: `${id}_gbp` },
+    lookupKeys: { EUR: `${id}_eur`, USD: `${id}_usd` },
   };
 }
 
@@ -157,9 +161,8 @@ function bookFiles(id: string, lang: Lang, version: string): Product['files'] {
   return { version, pdf: `${base}.pdf`, epub: `${base}.epub` };
 }
 
-/** GBP prices: still to be confirmed before live mode (see nava-libri/CLAUDE.md). */
-const PRICES_DRITTE: Record<Currency, number> = { EUR: 7.9, USD: 8.9, GBP: 7.49 };
-const PRICES_DETERSIVI: Record<Currency, number> = { EUR: 12.9, USD: 13.9, GBP: 10.99 };
+const PRICES_DRITTE: Record<Currency, number> = { EUR: 7.9, USD: 8.9 };
+const PRICES_DETERSIVI: Record<Currency, number> = { EUR: 12.9, USD: 13.9 };
 
 export const products: Product[] = [
   {

@@ -121,6 +121,7 @@ export const it = {
   price_excl_tax: 'Tasse escluse, calcolate al pagamento',
   bk_delivery: "Dopo il pagamento ricevi subito un'email con il link per scaricare il PDF e l'EPUB.",
   bk_noscript: 'Per acquistare serve JavaScript attivo nel browser.',
+  bk_uk_note: 'Sei nel Regno Unito? Per ora la vendita diretta non è disponibile: trovi l\'ebook su Amazon.',
   buy_loading: 'Apro il pagamento…',
   buy_error: 'Non è stato possibile aprire il pagamento. Riprova tra poco o scrivi a info@navaeditore.com.',
   card_details: 'Scopri il libro',

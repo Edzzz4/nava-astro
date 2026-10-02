@@ -11,6 +11,7 @@
    - One Price per currency, found by lookup key (<slug>_eur …).
      A Price can't change amount: a new one takes over the lookup key
      (transfer_lookup_key) and the old one is archived.
+   - Active Prices in a currency no longer sold (e.g. GBP) are archived.
    - Live keys (sk_live_…) are refused unless --live is also passed.
    ───────────────────────────────────────────────────────────── */
 
@@ -104,6 +105,16 @@ for (const p of products) {
       });
       if (current?.active) await stripe.prices.update(current.id, { active: false });
     });
+  }
+
+  // Currencies dropped from CURRENCIES: archive their active Prices.
+  if (product) {
+    const { data: active } = await stripe.prices.list({ product: p.stripe.product, active: true, limit: 100 });
+    for (const pr of active.filter((x) => !CURRENCIES.includes(x.currency.toUpperCase()))) {
+      await act(`archive price ${pr.lookup_key ?? pr.id} (${pr.currency.toUpperCase()} no longer sold)`, () =>
+        stripe.prices.update(pr.id, { active: false })
+      );
+    }
   }
 }
 

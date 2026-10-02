@@ -120,6 +120,7 @@ export const en: Dictionary = {
   price_excl_tax: 'Plus applicable tax, calculated at checkout',
   bk_delivery: 'Right after payment you get an email with the link to download the PDF and the EPUB.',
   bk_noscript: 'JavaScript must be enabled in your browser to buy.',
+  bk_uk_note: 'In the UK? Direct sales aren\'t available there yet: you can find the ebook on Amazon.',
   buy_loading: 'Opening checkout…',
   buy_error: "We couldn't open checkout. Please try again shortly or write to info@navaeditore.com.",
   card_details: 'See the book',
