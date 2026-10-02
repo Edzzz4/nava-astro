@@ -16,6 +16,8 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+# live-mode keys for scripts/stripe-check.mjs / stripe-setup.mjs (never commit)
+.env.live
 
 # macOS-specific files
 .DS_Store

@@ -41,6 +41,16 @@ export default async (req) => {
   const currency = String(body?.currency ?? '');
   if (!product || !CURRENCIES.includes(currency)) return json({ error: 'input' }, 400);
 
+  try {
+    return await createSession(origin, product, currency);
+  } catch (err) {
+    // Stripe or config error: log the details, give the page a generic error.
+    console.error('checkout: failed', err?.type ?? '', err?.code ?? '', err?.message ?? err);
+    return json({ error: 'stripe' }, 502);
+  }
+};
+
+async function createSession(origin, product, currency) {
   const lang = product.lang;
   const stripe = stripeClient();
   const lookupKey = product.stripe.lookupKeys[currency];
@@ -78,4 +88,4 @@ export default async (req) => {
   });
 
   return json({ url: session.url });
-};
+}

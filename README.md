@@ -88,6 +88,9 @@ pagina prodotto → checkout.js → Stripe Checkout → stripe-webhook.js
 - `netlify/functions/download.js`: GET = stato per la pagina di download,
   POST = file. Solo il POST conta, così gli antivirus delle email che aprono
   il link non consumano i download.
+- Controllo in sola lettura dell'account Stripe (prodotti, prezzi, Tax, webhook):
+  `npm run stripe:check` (sandbox, `.env`) o `npm run stripe:check:live`
+  (chiave live ristretta in `.env.live`, git-ignored).
 - Variabili: vedi `.env.example`. In Netlify vanno impostate per contesto
   (Deploy Previews = test, Production = live).
 - Prova in locale (modalità test):

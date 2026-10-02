@@ -12,6 +12,8 @@
     "astro": "astro",
     "og": "node scripts/generate-og.mjs",
     "stripe:setup": "node --env-file=.env scripts/stripe-setup.mjs",
+    "stripe:check": "node --env-file=.env scripts/stripe-check.mjs",
+    "stripe:check:live": "node --env-file=.env.live scripts/stripe-check.mjs",
     "books:upload": "node scripts/upload-books.mjs",
     "download-link": "node --env-file=.env scripts/download-link.mjs"
   },
