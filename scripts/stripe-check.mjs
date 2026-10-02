@@ -28,6 +28,13 @@ const ok = (msg) => console.log(`  ✓ ${msg}`);
 const bad = (msg) => (blocking++, console.log(`  ✗ ${msg}`));
 const note = (msg) => console.log(`  · ${msg}`);
 const section = (t) => console.log(`\n${t}`);
+/** "NL standard/small_seller" — options are keyed by lowercase country code. */
+function describeRegistration(r) {
+  const o = r.country_options?.[r.country.toLowerCase()];
+  const scheme = o?.[o?.type]?.place_of_supply_scheme;
+  return `${r.country}${o?.type ? ` ${o.type}` : ''}${scheme ? `/${scheme}` : ''}`;
+}
+
 async function read(label, fn) {
   try {
     return await fn();
@@ -56,14 +63,14 @@ section('Stripe Tax');
 const tax = await read('tax settings', () => stripe.tax.settings.retrieve());
 if (tax) {
   tax.status === 'active'
-    ? ok(`settings active (head office ${tax.head_office?.address?.country})`)
+    ? ok(`settings active (head office ${tax.head_office?.address?.country}, preset tax code ${tax.defaults?.tax_code ?? '-'})`)
     : bad('settings "pending": head office address missing (Dashboard → Tax → Settings)');
 }
 const regs = await read('tax registrations', () => stripe.tax.registrations.list({ limit: 100 }));
 if (regs) {
   const active = regs.data.filter((r) => r.status === 'active');
   active.length
-    ? ok(`active registrations: ${active.map((r) => r.country + (r.country_options?.eu?.type ? `/${r.country_options.eu.type}` : '')).join(', ')}`)
+    ? ok(`active registrations: ${active.map(describeRegistration).join(', ')}`)
     : bad('no active tax registration: automatic tax would collect 0 (ask the tax advisor which ones)');
 }
 
