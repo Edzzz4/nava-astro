@@ -30,10 +30,16 @@ export default async (req) => {
     return new Response('bad signature', { status: 400 });
   }
 
+  if (event.type === 'checkout.session.async_payment_failed') {
+    // Delayed payment method failed after checkout: nothing was delivered.
+    console.warn('webhook: async payment failed', event.data.object.id);
+    return new Response('ok', { status: 200 });
+  }
   if (!PAID_EVENTS.has(event.type)) return new Response('ignored', { status: 200 });
   const session = event.data.object;
-  // Delayed payment methods: wait for async_payment_succeeded.
-  if (session.payment_status !== 'paid') return new Response('not paid yet', { status: 200 });
+  // Delayed payment methods: `completed` arrives while still unpaid;
+  // deliver on async_payment_succeeded instead.
+  if (session.payment_status === 'unpaid') return new Response('not paid yet', { status: 200 });
 
   await fulfill(stripe, session);
   return new Response('ok', { status: 200 });

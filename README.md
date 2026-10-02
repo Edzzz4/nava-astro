@@ -94,7 +94,8 @@ pagina prodotto → checkout.js → Stripe Checkout → stripe-webhook.js
 
   ```sh
   npx netlify-cli dev                      # porta 8888
-  stripe listen --forward-to localhost:8888/.netlify/functions/stripe-webhook
+  stripe listen --events checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed \
+    --forward-to localhost:8888/.netlify/functions/stripe-webhook
   curl -X POST http://localhost:8888/.netlify/functions/dev-seed-books   # store locale
   ```
 

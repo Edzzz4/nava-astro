@@ -33,9 +33,13 @@ const COPY = {
 
 export function deliveryEmail({ lang, title, link, expires, orderRef }) {
   const c = COPY[lang] ?? COPY.en;
+  // dateStyle/timeStyle can't be combined with timeZoneName: spell it out.
   const date = new Intl.DateTimeFormat(c.locale, {
-    dateStyle: 'long',
-    timeStyle: 'short',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
     timeZone: 'Europe/Amsterdam',
     timeZoneName: 'short',
   }).format(new Date(expires));

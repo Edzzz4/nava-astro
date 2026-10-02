@@ -61,6 +61,8 @@ export default async (req) => {
   const metadata = { product: product.id, lang, currency, consent_version: CONSENT_VERSION };
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
+    // Tags these sessions in the Dashboard (fixed label, random suffix).
+    integration_identifier: 'nava-ebook-checkout-qhtwmzrk',
     line_items: [{ price: price.id, quantity: 1 }],
     locale: lang,
     success_url: `${origin}/${lang}/grazie/`,
