@@ -35,3 +35,6 @@ pnpm-debug.log*
 
 # Netlify CLI local state
 .netlify/
+
+# Local-only helper: seeds the `netlify dev` Blobs sandbox from ~/Desktop/nava-libri.
+netlify/functions/dev-seed-books.js

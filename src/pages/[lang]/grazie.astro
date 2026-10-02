@@ -1,0 +1,34 @@
+---
+/**
+ * Thank-you page: Stripe Checkout's success_url. Static on purpose:
+ * delivery happens by email (stripe-webhook.js), never from this page,
+ * so reloading or sharing it gives nothing away. Not indexed.
+ */
+import Base from '../../layouts/Base.astro';
+import { LANGUAGES, localePath, useTranslations, type Lang } from '../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+---
+
+<Base {lang} title={t('ty_meta_title')} description={t('ty_msg')} noindex>
+  <div class="container-x page">
+    <h1 class="serif page-title">{t('ty_title')}</h1>
+    <div class="prose body">
+      <p>{t('ty_msg')}</p>
+      <p class="text-muted">{t('ty_help')}</p>
+    </div>
+    <p class="back"><a href={localePath(lang, 'catalogo/')} class="btn btn-ghost">{t('nf_catalog')}</a></p>
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: var(--space-9); padding-bottom: var(--space-9); }
+  .page-title { font-size: var(--text-5xl); }
+  .body { margin-top: var(--space-6); font-size: var(--text-lg); }
+  .back { margin-top: var(--space-7); }
+</style>

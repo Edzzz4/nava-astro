@@ -112,6 +112,36 @@ export const it = {
   legal_updated: 'Ultimo aggiornamento',
   legal_en_note: 'Questa pagina è disponibile solo in italiano per ora.',
 
+  /* ebook sales: product page */
+  bk_series: 'Collana', bk_lang: 'Lingua', bk_lang_value: 'Italiano',
+  bk_pages_pdf: 'Pagine (PDF)', bk_format_value: 'Ebook: PDF + EPUB',
+  bk_other_edition: 'Disponibile anche in inglese:',
+  bk_currency: 'Valuta',
+  price_incl_tax: 'IVA inclusa',
+  price_excl_tax: 'Tasse escluse, calcolate al pagamento',
+  bk_delivery: "Dopo il pagamento ricevi subito un'email con il link per scaricare il PDF e l'EPUB.",
+  bk_noscript: 'Per acquistare serve JavaScript attivo nel browser.',
+  buy_loading: 'Apro il pagamento…',
+  buy_error: 'Non è stato possibile aprire il pagamento. Riprova tra poco o scrivi a info@navaeditore.com.',
+  card_details: 'Scopri il libro',
+
+  /* ebook sales: thank-you page */
+  ty_meta_title: 'Grazie — Nava', ty_title: "Grazie per l'acquisto.",
+  ty_msg: "Ti abbiamo inviato un'email con il link per scaricare il libro in PDF ed EPUB. Il link vale 72 ore e permette 5 download per ciascun file.",
+  ty_help: "Non trovi l'email dopo qualche minuto? Controlla lo spam o scrivi a info@navaeditore.com con l'indirizzo usato per il pagamento.",
+
+  /* ebook sales: download page */
+  dl_meta_title: 'Scarica il tuo libro — Nava', dl_title: 'Scarica il tuo libro',
+  dl_loading: 'Controllo il link…',
+  dl_expires: 'Il link scade il', dl_remaining: 'download rimasti',
+  dl_pdf: 'Scarica il PDF', dl_epub: "Scarica l'EPUB",
+  dl_pdf_note: 'Per computer e tablet, o da stampare.',
+  dl_epub_note: 'Per e-reader e app di lettura.',
+  dl_err_invalid: "Questo link non è valido. Controlla di averlo copiato per intero dall'email.",
+  dl_err_expired: "Questo link è scaduto: vale 72 ore dall'acquisto. Scrivi a info@navaeditore.com e te ne mandiamo uno nuovo.",
+  dl_err_limit: 'Hai raggiunto il limite di 5 download per questo file. Scrivi a info@navaeditore.com se ti serve ancora.',
+  dl_err_generic: 'Qualcosa non ha funzionato. Riprova tra poco o scrivi a info@navaeditore.com.',
+
   /* 404 */
   nf_title: 'Pagina non trovata.',
   nf_msg: 'La pagina che cercavi non è (più) sullo scaffale.',

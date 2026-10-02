@@ -9,6 +9,11 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Ebook sales: checkout, stripe-webhook, download (netlify/functions/).
+# esbuild bundles the shared catalog (src/data/books.ts) into each one.
+[functions]
+  node_bundler = "esbuild"
+
 # ── Redirects ──
 # Root → default language. `301!` forces the redirect even though
 # dist/index.html exists (that file is only a fallback for non-Netlify hosts).

@@ -111,6 +111,36 @@ export const en: Dictionary = {
   legal_updated: 'Last updated',
   legal_en_note: 'This page is currently available in Italian only.',
 
+  /* ebook sales: product page */
+  bk_series: 'Series', bk_lang: 'Language', bk_lang_value: 'English',
+  bk_pages_pdf: 'Pages (PDF)', bk_format_value: 'Ebook: PDF + EPUB',
+  bk_other_edition: 'Also available in Italian:',
+  bk_currency: 'Currency',
+  price_incl_tax: 'VAT included',
+  price_excl_tax: 'Plus applicable tax, calculated at checkout',
+  bk_delivery: 'Right after payment you get an email with the link to download the PDF and the EPUB.',
+  bk_noscript: 'JavaScript must be enabled in your browser to buy.',
+  buy_loading: 'Opening checkout…',
+  buy_error: "We couldn't open checkout. Please try again shortly or write to info@navaeditore.com.",
+  card_details: 'See the book',
+
+  /* ebook sales: thank-you page */
+  ty_meta_title: 'Thank you — Nava', ty_title: 'Thank you for your purchase.',
+  ty_msg: 'We have emailed you the link to download the book as PDF and EPUB. The link is valid for 72 hours and allows 5 downloads of each file.',
+  ty_help: "Can't find the email after a few minutes? Check your spam folder or write to info@navaeditore.com with the address you used to pay.",
+
+  /* ebook sales: download page */
+  dl_meta_title: 'Download your book — Nava', dl_title: 'Download your book',
+  dl_loading: 'Checking your link…',
+  dl_expires: 'The link expires on', dl_remaining: 'downloads left',
+  dl_pdf: 'Download the PDF', dl_epub: 'Download the EPUB',
+  dl_pdf_note: 'For computers and tablets, or to print.',
+  dl_epub_note: 'For e-readers and reading apps.',
+  dl_err_invalid: 'This link is not valid. Check that you copied all of it from the email.',
+  dl_err_expired: 'This link has expired: it is valid for 72 hours after purchase. Write to info@navaeditore.com and we will send you a new one.',
+  dl_err_limit: 'You have reached the limit of 5 downloads for this file. Write to info@navaeditore.com if you need it again.',
+  dl_err_generic: 'Something went wrong. Please try again shortly or write to info@navaeditore.com.',
+
   /* 404 */
   nf_title: 'Page not found.',
   nf_msg: "The page you were after isn't (any longer) on the shelf.",

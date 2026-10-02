@@ -1,0 +1,72 @@
+---
+/**
+ * Download page, opened from the delivery email: /<lang>/download/#t=<token>.
+ * The token sits in the URL fragment, so it never reaches server logs or
+ * Referer headers. src/scripts/download.ts reads it, asks the download
+ * function for the order status (GET, JSON) and fills one POST form per
+ * file. Only the POST counts a download: email link scanners that merely
+ * open the link don't consume the 5 downloads. Not indexed.
+ */
+import Base from '../../layouts/Base.astro';
+import { LANGUAGES, useTranslations, type Lang } from '../../i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+const files = [
+  { kind: 'pdf', label: t('dl_pdf'), note: t('dl_pdf_note') },
+  { kind: 'epub', label: t('dl_epub'), note: t('dl_epub_note') },
+] as const;
+---
+
+<Base {lang} title={t('dl_meta_title')} description={t('dl_title')} noindex>
+  <div
+    class="container-x page"
+    data-download
+    data-lang={lang}
+    data-err-invalid={t('dl_err_invalid')}
+    data-err-expired={t('dl_err_expired')}
+    data-err-limit={t('dl_err_limit')}
+    data-err-generic={t('dl_err_generic')}
+  >
+    <h1 class="serif page-title">{t('dl_title')}</h1>
+
+    <p class="text-muted status" data-dl-loading>{t('dl_loading')}</p>
+    <noscript><p class="status">{t('bk_noscript')}</p></noscript>
+    <p class="status dl-error" role="alert" data-dl-error hidden></p>
+
+    <div data-dl-ok hidden>
+      <p class="serif book" data-dl-title></p>
+      <p class="text-muted expires">{t('dl_expires')} <span data-dl-expires></span>.</p>
+      <ul class="files" role="list">
+        {files.map((f) => (
+          <li class="file">
+            <form method="post" action="/.netlify/functions/download" data-dl-form={f.kind}>
+              <input type="hidden" name="t" value="" />
+              <input type="hidden" name="file" value={f.kind} />
+              <button type="submit" class="btn btn-primary">{f.label}</button>
+            </form>
+            <p class="text-muted note">{f.note} <span data-dl-remaining={f.kind}></span> {t('dl_remaining')}.</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <script src="../../scripts/download.ts"></script>
+</Base>
+
+<style>
+  .page { padding-top: var(--space-9); padding-bottom: var(--space-9); max-width: 760px; }
+  .page-title { font-size: var(--text-5xl); }
+  .status { margin-top: var(--space-6); font-size: var(--text-lg); }
+  .dl-error { color: var(--accent-text); }
+  .book { margin-top: var(--space-6); font-size: var(--text-2xl); }
+  .expires { margin-top: var(--space-2); }
+  .files { list-style: none; padding: 0; margin: var(--space-6) 0 0; display: grid; gap: var(--space-5); }
+  .note { margin-top: var(--space-2); font-size: var(--text-sm); }
+</style>

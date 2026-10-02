@@ -7,7 +7,7 @@
  */
 import Base from '../../../layouts/Base.astro';
 import BookCard from '../../../components/BookCard.astro';
-import { CATEGORIES, products } from '../../../data/books';
+import { activeCategories, productsFor } from '../../../data/books';
 import { LANGUAGES, useTranslations, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
@@ -17,7 +17,9 @@ export function getStaticPaths() {
 const lang = Astro.params.lang as Lang;
 const t = useTranslations(lang);
 
-const sorted = [...products].sort((a, b) => b.year - a.year);
+const editions = productsFor(lang);
+const categories = activeCategories(lang);
+const sorted = [...editions].sort((a, b) => b.year - a.year);
 ---
 
 <Base
@@ -49,7 +51,7 @@ const sorted = [...products].sort((a, b) => b.year - a.year);
         <h2 class="smallcaps text-muted side-h">{t('filter_title')}</h2>
         <div class="filters" data-catalog-filters>
           <button class="filter-btn" data-cat="all" aria-pressed="true">{t('filter_all')}</button>
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <button class="filter-btn" data-cat={cat.slug} aria-pressed="false">{cat[lang]}</button>
           ))}
         </div>
@@ -59,7 +61,7 @@ const sorted = [...products].sort((a, b) => b.year - a.year);
       <section>
         <div class="toolbar">
           <p class="text-muted count" aria-live="polite">
-            <span data-catalog-count>{products.length}</span> {t('results_word')}
+            <span data-catalog-count>{editions.length}</span> {t('results_word')}
           </p>
           <label class="sort-label">
             <span class="text-muted">{t('sort_label')}</span>

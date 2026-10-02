@@ -1,58 +1,76 @@
 ---
 /**
- * Product page — statically generated for every product × language.
- * JSON-LD: Book (with Offer) + BreadcrumbList.
+ * Product page — one per ebook EDITION, generated only in the edition's
+ * own language (/it/catalogo/<id>/ or /en/catalogo/<id>/). The edition
+ * in the other language is linked via hreflang + language switch.
+ * Buying: currency choice, then src/scripts/buy.ts calls the checkout
+ * function and navigates to Stripe Checkout (no CSP change needed).
+ * JSON-LD: Book (one Offer per currency) + BreadcrumbList.
  */
 import Base from '../../../layouts/Base.astro';
 import BookCard from '../../../components/BookCard.astro';
 import {
+  CURRENCIES,
+  DEFAULT_CURRENCY,
+  TAX_INCLUSIVE,
   categoryLabel,
   formatPrice,
   products,
   related,
+  sibling,
   type Product,
 } from '../../../data/books';
-import { LANGUAGES, localePath, useTranslations, type Lang } from '../../../i18n';
+import { LANGUAGES, localePath, useTranslations, type Alternates, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
-  return LANGUAGES.flatMap((lang) =>
-    products.map((product) => ({ params: { lang, id: product.id }, props: { product } }))
-  );
+  return products.map((product) => ({ params: { lang: product.lang, id: product.id }, props: { product } }));
 }
 
 const lang = Astro.params.lang as Lang;
 const { product } = Astro.props as { product: Product };
 const t = useTranslations(lang);
 
-const title = product.title[lang];
-const subtitle = product.subtitle?.[lang];
-const description = product.description[lang];
-const bio = product.bio?.[lang];
-const paragraphs = description.split('\n\n');
-const format = product.format ? t(`fmt_${product.format}`) : undefined;
+const { title, subtitle } = product;
 const catalogUrl = localePath(lang, 'catalogo/');
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 const coverAbs = new URL(product.cover, Astro.site).href;
-const hasIsbn = Boolean(product.isbn && product.isbn !== 'TBD');
+
+// The same book in the other language(s): hreflang + language switch.
+const alternates: Alternates = Object.fromEntries(
+  LANGUAGES.flatMap((l) => {
+    const ed = sibling(product, l);
+    return ed ? [[l, localePath(l, `catalogo/${ed.id}/`)]] : [];
+  })
+);
+const otherEditions = LANGUAGES.filter((l) => l !== lang).flatMap((l) => {
+  const ed = sibling(product, l);
+  return ed ? [{ ed, href: localePath(l, `catalogo/${ed.id}/`) }] : [];
+});
+
+const defaultCurrency = DEFAULT_CURRENCY[lang];
+const taxNote = (c: (typeof CURRENCIES)[number]) => (TAX_INCLUSIVE[c] ? t('price_incl_tax') : t('price_excl_tax'));
+const offers = CURRENCIES.map((c) => ({
+  currency: c,
+  label: formatPrice(product.prices[c], c, lang),
+  note: taxNote(c),
+}));
 
 const relatedProducts = related(product);
-const metaDescription = `${title} — ${t('meta_book_desc_prefix')} ${product.author}. ${paragraphs[0]!.slice(0, 150)}`;
+const metaDescription = `${title}: ${subtitle}. ${product.lead}`.slice(0, 160);
 const categoryUrl = localePath(lang, `categoria/${product.category}/`);
 
-// Social scrapers don't render SVG: use the pre-generated PNG card
+// Social scrapers don't render every format: use the pre-generated PNG card
 // (scripts/generate-og.mjs → public/og/<id>.png, committed to the repo).
 // Falls back to the site default if the PNG hasn't been generated yet.
 import { existsSync } from 'node:fs';
 const ogImage = existsSync(`public/og/${product.id}.png`) ? `/og/${product.id}.png` : '/og-default.png';
 
 const specs: { label: string; value: string }[] = [
-  ...(product.pages ? [{ label: t('bk_pages'), value: String(product.pages) }] : []),
-  ...(format ? [{ label: t('bk_format'), value: format }] : []),
+  ...(product.series ? [{ label: t('bk_series'), value: product.series }] : []),
+  { label: t('bk_lang'), value: t('bk_lang_value') },
+  { label: t('bk_format'), value: t('bk_format_value') },
+  { label: t('bk_pages_pdf'), value: String(product.pages) },
   { label: t('bk_year'), value: String(product.year) },
-  ...(hasIsbn ? [{ label: t('bk_isbn'), value: product.isbn! }] : []),
-  ...(product.dimensioni ? [{ label: t('bk_dimensions'), value: product.dimensioni }] : []),
-  ...(product.tecnica ? [{ label: t('bk_technique'), value: product.tecnica[lang] }] : []),
-  ...(product.tiratura ? [{ label: t('bk_edition'), value: String(product.tiratura) }] : []),
 ];
 
 const jsonLd = [
@@ -60,24 +78,22 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'Book',
     name: title,
-    author: { '@type': 'Person', name: product.author },
-    inLanguage: 'it',
-    ...(hasIsbn ? { isbn: product.isbn } : {}),
-    ...(product.pages ? { numberOfPages: product.pages } : {}),
-    ...(product.format
-      ? { bookFormat: product.format === 'Hardcover' ? 'https://schema.org/Hardcover' : 'https://schema.org/Paperback' }
-      : {}),
+    alternativeHeadline: subtitle,
+    author: { '@type': 'Organization', name: product.author },
+    inLanguage: product.lang,
+    bookFormat: 'https://schema.org/EBook',
+    numberOfPages: product.pages,
     datePublished: String(product.year),
     image: coverAbs,
-    publisher: { '@type': 'Organization', name: 'Nava' },
+    publisher: { '@type': 'Organization', name: 'Nava Editore' },
     url: pageUrl,
-    offers: {
+    offers: CURRENCIES.map((c) => ({
       '@type': 'Offer',
-      price: product.price.toFixed(2),
-      priceCurrency: 'EUR',
+      price: product.prices[c].toFixed(2),
+      priceCurrency: c,
       availability: 'https://schema.org/InStock',
       url: pageUrl,
-    },
+    })),
   },
   {
     '@context': 'https://schema.org',
@@ -100,6 +116,7 @@ const jsonLd = [
   ogType="book"
   {ogImage}
   {jsonLd}
+  {alternates}
 >
   <div class="container-x page">
     <nav aria-label={t('aria_breadcrumb')} class="breadcrumb">
@@ -117,7 +134,7 @@ const jsonLd = [
           <img
             src={product.cover}
             width="600"
-            height="800"
+            height="960"
             loading="eager"
             decoding="async"
             class="cover main-cover"
@@ -133,13 +150,47 @@ const jsonLd = [
           <a href={categoryUrl} class="genre-link text-accent">{categoryLabel(product.category, lang)}</a>
         </p>
         <h1 class="serif title">{title}</h1>
-        {subtitle && <p class="serif text-muted subtitle"><em>{subtitle}</em></p>}
-        <p class="author">{t('bk_author_label')}: <strong>{product.author}</strong></p>
-        <p class="serif price">{formatPrice(product.price)}</p>
+        <p class="serif text-muted subtitle"><em>{subtitle}</em></p>
+        <p class="author">{product.author}</p>
 
-        <div class="buy">
-          <a href={product.stripeLink} class="btn btn-primary">{t('buy_now')}</a>
-          {product.amazonLink && <a href={product.amazonLink} class="btn btn-ghost">{t('buy_amazon')}</a>}
+        <div class="buybox" data-buybox>
+          <p class="serif price" data-price aria-live="polite">{formatPrice(product.prices[defaultCurrency], defaultCurrency, lang)}</p>
+          <p class="text-muted tax-note" data-tax-note>{taxNote(defaultCurrency)}</p>
+
+          <fieldset class="currency">
+            <legend class="smallcaps text-muted currency-h">{t('bk_currency')}</legend>
+            <div class="currency-opts">
+              {offers.map((o) => (
+                <label class="cur">
+                  <input
+                    type="radio"
+                    name="currency"
+                    value={o.currency}
+                    checked={o.currency === defaultCurrency}
+                    data-label={o.label}
+                    data-note={o.note}
+                  />
+                  <span>{o.currency}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div class="buy">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-buy
+              data-product={product.id}
+              data-lang={lang}
+              data-loading={t('buy_loading')}
+              hidden
+            >{t('buy_now')}</button>
+            <noscript><p class="text-muted">{t('bk_noscript')}</p></noscript>
+            {product.amazonLink && <a href={product.amazonLink} class="btn btn-ghost">{t('buy_amazon')}</a>}
+          </div>
+          <p class="buy-error" role="alert" data-buy-error hidden>{t('buy_error')}</p>
+          <p class="text-muted delivery">{t('bk_delivery')}</p>
         </div>
 
         <dl class="specs">
@@ -150,12 +201,23 @@ const jsonLd = [
             </div>
           ))}
         </dl>
+
+        {otherEditions.map(({ ed, href }) => (
+          <p class="other-ed">
+            {t('bk_other_edition')} <a href={href} class="link-inline" hreflang={ed.lang} lang={ed.lang}>{ed.title}</a>
+          </p>
+        ))}
       </div>
     </article>
 
     <section class="desc-block">
       <div class="prose prose-dropcap desc">
-        {paragraphs.map((p) => <p>{p}</p>)}
+        <p><strong>{product.lead}</strong></p>
+        {product.description.map((p) => <p>{p}</p>)}
+        <ul>
+          {product.highlights.map((h) => <li>{h}</li>)}
+        </ul>
+        {product.closing.map((p) => <p>{p}</p>)}
       </div>
       <aside class="preview reveal">
         <div class="preview-box">
@@ -165,28 +227,18 @@ const jsonLd = [
       </aside>
     </section>
 
-    {bio && (
-      <section class="bio-block">
-        <h2 class="serif bio-h">{t('bk_about_author')}</h2>
-        <div class="bio">
-          <div class="avatar serif" aria-hidden="true">{product.author.charAt(0)}</div>
-          <div>
-            <p class="bio-name">{product.author}</p>
-            <p class="text-muted bio-text">{bio}</p>
-          </div>
+    {relatedProducts.length > 0 && (
+      <section class="related">
+        <h2 class="serif smallcaps related-h">{t('bk_related')}</h2>
+        <div class="related-grid">
+          {relatedProducts.map((rel) => <BookCard product={rel} {lang} />)}
         </div>
       </section>
     )}
-
-    <section class="related">
-      <h2 class="serif smallcaps related-h">{t('bk_related')}</h2>
-      <div class="related-grid">
-        {relatedProducts.map((rel) => <BookCard product={rel} {lang} />)}
-      </div>
-    </section>
   </div>
 
   <script src="../../../scripts/tilt.ts"></script>
+  <script src="../../../scripts/buy.ts"></script>
 </Base>
 
 <style>
@@ -216,8 +268,22 @@ const jsonLd = [
   .title { font-size: var(--text-5xl); margin-top: var(--space-2); }
   .subtitle { font-size: var(--text-xl); margin-top: var(--space-3); }
   .author { margin-top: var(--space-4); font-size: var(--text-lg); }
+
   .price { font-size: var(--text-3xl); margin-top: var(--space-5); }
+  .tax-note { font-size: var(--text-sm); margin-top: var(--space-1); }
+  .currency { border: 0; padding: 0; margin: var(--space-4) 0 0; }
+  .currency-h { font-size: var(--text-sm); padding: 0; margin-bottom: var(--space-2); }
+  .currency-opts { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .cur {
+    display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer;
+    border: 1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 0.45rem 0.8rem; min-height: 44px; font-size: var(--text-sm);
+  }
+  .cur:has(input:checked) { border-color: var(--ink); }
+  .cur input { accent-color: var(--accent); margin: 0; }
   .buy { margin-top: var(--space-5); display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .buy-error { margin-top: var(--space-3); color: var(--accent-text); font-size: var(--text-sm); }
+  .delivery { margin-top: var(--space-3); font-size: var(--text-sm); max-width: 46ch; }
 
   .specs { margin: var(--space-6) 0 0; font-size: var(--text-sm); }
   .spec-row {
@@ -225,6 +291,7 @@ const jsonLd = [
     padding: var(--space-3) 0; border-bottom: 1px solid var(--line);
   }
   .spec-row dd { margin: 0; text-align: right; }
+  .other-ed { margin-top: var(--space-5); font-size: var(--text-sm); }
 
   .desc-block { margin-top: var(--space-8); display: grid; grid-template-columns: 1fr; gap: var(--space-7); }
   @media (min-width: 768px) { .desc-block { grid-template-columns: 1fr 320px; margin-top: var(--space-9); } }
@@ -237,17 +304,6 @@ const jsonLd = [
     display: flex; align-items: center; justify-content: center;
     text-align: center; font-size: var(--text-sm); padding: var(--space-5);
   }
-
-  .bio-block { margin-top: var(--space-8); border-top: 1px solid var(--line); padding-top: var(--space-7); }
-  .bio-h { font-size: var(--text-2xl); }
-  .bio { margin-top: var(--space-4); display: flex; align-items: flex-start; gap: var(--space-5); max-width: 60ch; }
-  .avatar {
-    width: 64px; height: 64px; border-radius: var(--radius-full);
-    background: var(--line); color: var(--muted); flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-size: var(--text-2xl);
-  }
-  .bio-name { font-weight: 500; }
-  .bio-text { margin-top: var(--space-1); }
 
   .related { margin-top: var(--space-9); }
   .related-h { font-size: var(--text-3xl); margin-bottom: var(--space-7); }

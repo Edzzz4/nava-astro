@@ -4,11 +4,11 @@
  * Hover / focus pulls the book out and turns it to show the cover.
  * Pure CSS transforms (compositor-only, no JS, no layout shift: each
  * slot keeps a fixed width and the cover overlays neighbors via
- * z-index). The spine is a center slice of the cover SVG itself, so
+ * z-index). The spine is a center slice of the cover image itself, so
  * colors always match. On touch the row simply scrolls and taps
  * navigate. prefers-reduced-motion removes the transition (global rule).
  */
-import { CATEGORIES, products } from '../data/books';
+import { CATEGORIES, productsFor } from '../data/books';
 import { localePath, useTranslations, type Lang } from '../i18n';
 
 interface Props {
@@ -20,7 +20,7 @@ const t = useTranslations(lang);
 
 // Real shelves group by series: category order, then year.
 const catOrder = new Map(CATEGORIES.map((c, i) => [c.slug, i]));
-const shelved = [...products].sort(
+const shelved = [...productsFor(lang)].sort(
   (a, b) => (catOrder.get(a.category)! - catOrder.get(b.category)!) || a.year - b.year
 );
 ---
@@ -38,12 +38,12 @@ const shelved = [...products].sort(
           <a
             class="b3d"
             href={localePath(lang, `catalogo/${product.id}/`)}
-            aria-label={product.title[lang]}
+            aria-label={product.title}
           >
             <img class="spine-img" src={product.cover} alt="" width="42" height="210" loading="lazy" decoding="async" />
             <span class="spine-shade" aria-hidden="true"></span>
-            <span class="spine-label serif" aria-hidden="true">{product.title[lang]}</span>
-            <img class="front" src={product.cover} alt="" width="158" height="210" loading="lazy" decoding="async" />
+            <span class="spine-label serif" aria-hidden="true">{product.title}</span>
+            <img class="front" src={product.cover} alt="" width="131" height="210" loading="lazy" decoding="async" />
           </a>
         </li>
       ))}
@@ -102,7 +102,7 @@ const shelved = [...products].sort(
   /* Front cover hinged on the spine's right edge, folded into the page. */
   .front {
     position: absolute; top: 0; left: 42px;
-    width: 158px; height: 210px;
+    width: 131px; height: 210px; /* 5:8 cover */
     object-fit: cover; display: block;
     transform-origin: left center;
     transform: rotateY(90deg);

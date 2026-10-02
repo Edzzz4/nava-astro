@@ -5,7 +5,7 @@ import BookCard from '../../components/BookCard.astro';
 import CategoryIcon from '../../components/CategoryIcon.astro';
 import Shelf from '../../components/Shelf.astro';
 import Sep from '../../components/Sep.astro';
-import { CATEGORIES, products } from '../../data/books';
+import { activeCategories, productsFor } from '../../data/books';
 import { LANGUAGES, localePath, useTranslations, type Lang } from '../../i18n';
 
 export function getStaticPaths() {
@@ -16,8 +16,10 @@ const lang = Astro.params.lang as Lang;
 const t = useTranslations(lang);
 
 const counts = new Map<string, number>();
-for (const p of products) counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
-const featured = products.filter((p) => p.featured).slice(0, 6);
+const editions = productsFor(lang);
+const categories = activeCategories(lang);
+for (const p of editions) counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+const featured = editions.filter((p) => p.featured).slice(0, 6);
 
 const jsonLd = [
   {
@@ -64,7 +66,7 @@ const jsonLd = [
       <p class="text-muted block-sub">{t('cat_sub')}</p>
     </div>
     <ul class="cat-grid" role="list">
-      {CATEGORIES.map((cat) => (
+      {categories.map((cat) => (
         <li>
           <a href={localePath(lang, `categoria/${cat.slug}/`)} class="cat-card reveal" data-category={cat.slug}>
             <span class="cat-icon"><CategoryIcon slug={cat.slug} /></span>

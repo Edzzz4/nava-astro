@@ -5,7 +5,7 @@
  * (filter + search + sort). Fully rendered at build: with JS off the
  * whole catalog is simply shown.
  */
-import { categoryLabel, formatPrice, type Product } from '../data/books';
+import { DEFAULT_CURRENCY, categoryLabel, formatPrice, type Product } from '../data/books';
 import { localePath, useTranslations, type Lang } from '../i18n';
 
 interface Props {
@@ -17,8 +17,10 @@ interface Props {
 
 const { product, lang, eager = false } = Astro.props;
 const t = useTranslations(lang);
-const title = product.title[lang];
+const title = product.title;
 const href = localePath(lang, `catalogo/${product.id}/`);
+const currency = DEFAULT_CURRENCY[lang];
+const price = product.prices[currency];
 ---
 
 <article
@@ -26,7 +28,7 @@ const href = localePath(lang, `catalogo/${product.id}/`);
   data-card
   data-category={product.category}
   data-search={`${title} ${product.author}`.toLowerCase()}
-  data-price={product.price}
+  data-price={price}
   data-year={product.year}
   data-title={title}
 >
@@ -37,7 +39,7 @@ const href = localePath(lang, `catalogo/${product.id}/`);
     <img
       src={product.cover}
       width="600"
-      height="800"
+      height="960"
       loading={eager ? 'eager' : 'lazy'}
       decoding="async"
       class="cover"
@@ -47,9 +49,10 @@ const href = localePath(lang, `catalogo/${product.id}/`);
     <h3 class="serif title">{title}</h3>
   </a>
   <p class="smallcaps text-muted category"><span class="cat-dot" aria-hidden="true"></span>{categoryLabel(product.category, lang)}</p>
-  <p class="price">{formatPrice(product.price)}</p>
+  <p class="price">{formatPrice(price, currency, lang)}</p>
   <div class="actions">
-    <a href={product.stripeLink} class="btn btn-primary btn-sm">{t('buy_now')}</a>
+    {/* Checkout starts on the product page (currency choice + consent text). */}
+    <a href={href} class="btn btn-primary btn-sm">{t('card_details')}</a>
     {product.amazonLink && <a href={product.amazonLink} class="btn btn-ghost btn-sm">{t('buy_amazon')}</a>}
   </div>
 </article>
