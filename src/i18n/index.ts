@@ -52,3 +52,16 @@ export function switchLangPath(pathname: string, target: Lang): string {
   if (!match) return localePath(target);
   return localePath(target, pathname.slice(match[0].length));
 }
+
+/**
+ * Explicit per-language paths for pages whose slug differs by language
+ * (each ebook edition has its own slug). A language missing from the
+ * map has no equivalent page.
+ */
+export type Alternates = Partial<Record<Lang, string>>;
+
+/** Language-switch target: the explicit alternate, else the shared-slug rule. */
+export function alternatePath(pathname: string, target: Lang, alternates?: Alternates): string {
+  if (!alternates) return switchLangPath(pathname, target);
+  return alternates[target] ?? localePath(target, 'catalogo/');
+}

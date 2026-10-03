@@ -47,7 +47,7 @@ for (const product of products) {
     .png()
     .toBuffer();
 
-  const titleLines = wrap(product.title.it, 20, 3);
+  const titleLines = wrap(product.title, 20, 3);
   const titleSize = titleLines.length === 3 ? 52 : 60;
   const titleY = 250;
   const lineH = titleSize * 1.12;

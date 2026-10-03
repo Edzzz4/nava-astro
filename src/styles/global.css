@@ -191,9 +191,9 @@ button { font-family: inherit; }
 .field:focus { outline: 2px solid var(--accent-text); outline-offset: 0; border-color: var(--accent); }
 .field[aria-invalid='true'] { border-color: var(--accent-text); }
 
-/* ── Covers (3:4, explicit box → zero CLS) ──────────────────── */
+/* ── Covers (5:8, explicit box → zero CLS) ──────────────────── */
 .cover {
-  width: 100%; aspect-ratio: 3 / 4; object-fit: cover;
+  width: 100%; aspect-ratio: 5 / 8; object-fit: cover; /* ebook covers: 1600 × 2560 */
   border: 1px solid var(--line); border-radius: var(--radius-sm);
   background: var(--line);
 }

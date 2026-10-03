@@ -2,18 +2,20 @@
 /**
  * Sticky top navigation + language switcher + mobile menu.
  * The language switcher links to the SAME page in the other language
- * (slugs are shared; only the /it/ /en/ prefix changes).
+ * (slugs are shared; only the /it/ /en/ prefix changes), or to the
+ * explicit `alternates` for pages whose slug differs (ebook editions).
  * The mobile toggle is wired by src/scripts/site.ts.
  */
-import { LANGUAGES, localePath, switchLangPath, useTranslations, type Lang } from '../i18n';
+import { LANGUAGES, alternatePath, localePath, useTranslations, type Alternates, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
   /** Which item to mark as current. */
   active?: 'home' | 'catalog' | 'about' | 'contact';
+  alternates?: Alternates;
 }
 
-const { lang, active } = Astro.props;
+const { lang, active, alternates } = Astro.props;
 const t = useTranslations(lang);
 const pathname = Astro.url.pathname;
 
@@ -48,7 +50,7 @@ const items = [
             {i > 0 && <span aria-hidden="true" class="lang-sep">/</span>}
             <a
               class="lang-btn"
-              href={switchLangPath(pathname, l)}
+              href={alternatePath(pathname, l, alternates)}
               aria-current={l === lang ? 'true' : undefined}
               aria-label={l === 'it' ? 'Italiano' : 'English'}
               lang={l}

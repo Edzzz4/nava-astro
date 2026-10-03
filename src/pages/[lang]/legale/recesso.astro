@@ -1,40 +1,48 @@
 ---
-/** Right of withdrawal (14 days, EU) — structural placeholder, NOT legal advice. */
+/**
+ * Right of withdrawal for ebooks (digital content, immediate delivery).
+ * DRAFT to be validated by a person — NOT legal advice.
+ * Directive 2011/83/EU art. 16(m) and art. 8(7): consent + acknowledgement
+ * collected in Stripe Checkout, confirmation in the delivery email.
+ */
 import Legal from '../../../layouts/Legal.astro';
-import { LANGUAGES, type Lang } from '../../../i18n';
+import { COMPANY } from '../../../data/company';
+import { LANGUAGES, localePath, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
   return LANGUAGES.map((lang) => ({ params: { lang } }));
 }
 const lang = Astro.params.lang as Lang;
+const C = COMPANY;
 ---
 
-<Legal {lang} title="Diritto di recesso" description="Diritto di recesso di 14 giorni per gli acquisti su navaeditore.com (Direttiva UE 2011/83).">
-  <h2>1. Il diritto di recesso</h2>
+<Legal {lang} title="Diritto di recesso" description="Ebook a consegna immediata: quando il diritto di recesso di 14 giorni non si applica.">
+  <h2>1. Ebook: consegna immediata e recesso</h2>
   <p>
-    Ai sensi degli artt. 52 e ss. del Codice del Consumo (in attuazione della Direttiva
-    2011/83/UE), il consumatore ha diritto di recedere dal contratto entro
-    <strong>14 giorni</strong> dalla consegna dei prodotti, senza doverne indicare il motivo.
+    Di norma un consumatore nell'UE può recedere da un acquisto online entro 14 giorni. Per i contenuti
+    digitali, come i nostri ebook, il diritto di recesso non si applica quando sono vere tutte e tre
+    queste condizioni:
+  </p>
+  <ol>
+    <li>prima del pagamento hai acconsentito espressamente all'inizio immediato della consegna;</li>
+    <li>hai riconosciuto che così perdi il diritto di recesso;</li>
+    <li>ti abbiamo confermato il consenso per email.</li>
+  </ol>
+  <p>
+    Nella pagina di pagamento la casella del consenso è obbligatoria e la conferma è nell'email con il
+    link di download. Per questo, una volta completato l'acquisto, non è possibile recedere.
   </p>
 
-  <h2>2. Come esercitarlo</h2>
+  <h2>2. Se il pagamento non va a buon fine</h2>
+  <p>Il contratto non si conclude e non ti viene addebitato nulla.</p>
+
+  <h2>3. Se un file non funziona</h2>
   <p>
-    Il recesso si esercita inviando, entro il termine, una dichiarazione esplicita a
-    [TODO: ragione sociale], [TODO: indirizzo], oppure via email a
-    <a href="mailto:info@navaeditore.com">info@navaeditore.com</a>.
-    [TODO: valutare se allegare il modulo tipo di recesso previsto dall'Allegato I,
-    parte B, della Direttiva.]
+    Non serve il recesso: vale la sezione "File difettosi" dei <a href={localePath(lang, 'legale/termini-di-vendita/')}>Termini di vendita</a>.
   </p>
 
-  <h2>3. Restituzione e rimborso</h2>
+  <h2>4. Contatti</h2>
   <p>
-    I prodotti vanno restituiti senza indebito ritardo e comunque entro 14 giorni dalla
-    comunicazione del recesso, a [TODO: indirizzo di reso]. Il rimborso, comprensivo delle
-    spese di consegna standard, avviene entro 14 giorni dal ricevimento della merce o
-    dalla prova di spedizione, con lo stesso mezzo di pagamento dell'ordine.
-    [TODO: chi sostiene i costi di reso.]
+    <a href={`mailto:${C.email}`}>{C.email}</a> · {C.legalName}, {C.address}, {C.country.it}.
   </p>
-
-  <h2>4. Esclusioni</h2>
-  <p>[TODO: eventuali esclusioni (es. prodotti personalizzati o sigillati aperti).]</p>
 </Legal>

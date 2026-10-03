@@ -1,10 +1,12 @@
 /* ─────────────────────────────────────────────────────────────
    Nava — single source of truth for the catalog (typed).
 
-   EXTENSION POINT — add a product:
+   EXTENSION POINT — add an edition (one record per language edition):
    copy an object in `products`, change the fields, drop a cover in
-   public/covers/<id>.svg. TypeScript is the guardrail: a missing or
-   malformed field fails `astro check` / `astro build`.
+   public/covers/<id>.jpg (600 × 960), run `npm run og`, then
+   `npm run stripe:setup` and `npm run books:upload` (see README).
+   TypeScript is the guardrail: a missing or malformed field fails
+   `astro check` / `astro build`.
 
    EXTENSION POINT — add a category:
    add an entry to CATEGORIES (slug + it/en labels) and an icon in
@@ -87,280 +89,209 @@ export const CATEGORIES = [
 
 export type CategorySlug = (typeof CATEGORIES)[number]['slug'];
 
-/** A string localized in every supported language. */
-export type Localized = Record<Lang, string>;
+/**
+ * Currencies sold on the site. Each one is a separate Stripe Price.
+ * No GBP: UK consumer sales need UK VAT registration from the first sale,
+ * so until then UK buyers go through Amazon (nava-libri/CLAUDE.md).
+ */
+export const CURRENCIES = ['EUR', 'USD'] as const;
+export type Currency = (typeof CURRENCIES)[number];
 
+/** Currency preselected on the product page, by site language. */
+export const DEFAULT_CURRENCY: Record<Lang, Currency> = { it: 'EUR', en: 'USD' };
+
+/**
+ * Stripe tax_behavior per currency: EUR prices include VAT,
+ * USD prices are before tax (US convention). scripts/stripe-setup.mjs
+ * creates the Prices with exactly these settings.
+ */
+export const TAX_INCLUSIVE: Record<Currency, boolean> = { EUR: true, USD: false };
+
+/** Stripe Tax code: "Digital Books - downloaded - non subscription - with permanent rights". */
+export const STRIPE_TAX_CODE = 'txcd_10302000';
+
+/**
+ * One record per EDITION: each language edition is a separate product,
+ * with its own Stripe Product, prices and files. Its page exists only in
+ * its own language (/it/catalogo/<id>/ or /en/catalogo/<id>/); `work`
+ * links the editions of the same book (hreflang + language switch).
+ */
 export interface Product {
-  /** URL slug, identical in both languages (only the /it/ /en/ prefix changes). */
+  /** URL slug = Stripe Product id = prefix of the file names. */
   id: string;
-  title: Localized;
-  subtitle?: Localized;
+  /** Language of the edition (and of its page). */
+  lang: Lang;
+  /** Shared by the editions of the same book. */
+  work: string;
+  title: string;
+  subtitle: string;
+  series?: string;
   author: string;
   category: CategorySlug;
-  /** EUR. */
-  price: number;
-  /** Path under public/, e.g. "/covers/<id>.svg". */
+  /** Display prices. Must match the Stripe Prices (checked by checkout.js). */
+  prices: Record<Currency, number>;
+  /** Stripe Product id and Price lookup keys: identical in test and live mode. */
+  stripe: { product: string; lookupKeys: Record<Currency, string> };
+  /** Files delivered after purchase: keys in the private Netlify Blobs store "books". */
+  files: { version: string; pdf: string; epub: string };
+  /** Path under public/, e.g. "/covers/<id>.jpg" (600 × 960, ratio 1:1.6). */
   cover: string;
-  /** Keep "STRIPE_LINK_TBD" until the real Stripe Payment Link exists. */
-  stripeLink: string;
-  amazonLink?: string;
+  /** Pages of the PDF edition (from the build report). */
+  pages: number;
   year: number;
   featured: boolean;
-  description: Localized;
-  /** Author bio shown on the product page. */
-  bio?: Localized;
-
-  /* Book-only fields */
-  pages?: number;
-  isbn?: string;
-  format?: 'Paperback' | 'Hardcover';
-
-  /* Print-only fields (stampe d'arte) — unused today, typed for the future */
-  dimensioni?: string;
-  tecnica?: Localized;
-  tiratura?: number;
+  /** Product page copy, from the KDP listing (nava-libri/nava/kdp/). */
+  lead: string;
+  description: string[];
+  highlights: string[];
+  closing: string[];
+  amazonLink?: string;
 }
+
+/** Stripe ids derived from the slug, so a record can't drift from its Prices. */
+function stripeIds(id: string): Product['stripe'] {
+  return {
+    product: id,
+    lookupKeys: { EUR: `${id}_eur`, USD: `${id}_usd` },
+  };
+}
+
+function bookFiles(id: string, lang: Lang, version: string): Product['files'] {
+  const base = `${id}_${lang.toUpperCase()}_${version}`;
+  return { version, pdf: `${base}.pdf`, epub: `${base}.epub` };
+}
+
+const PRICES_DRITTE: Record<Currency, number> = { EUR: 7.9, USD: 8.9 };
+const PRICES_DETERSIVI: Record<Currency, number> = { EUR: 12.9, USD: 13.9 };
 
 export const products: Product[] = [
   {
-    id: 'piccolo-atlante-mostri',
-    title:    { it: 'Piccolo Atlante dei Mostri Gentili', en: 'A Little Atlas of Gentle Monsters' },
-    subtitle: { it: 'Creature da non temere', en: 'Creatures not to fear' },
-    author: 'Sara Conti',
-    category: 'libri-per-bambini',
-    price: 19.0,
-    cover: '/covers/piccolo-atlante-mostri.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 64, isbn: 'TBD', format: 'Hardcover', year: 2024, featured: true,
-    description: {
-      it: 'Un bestiario illustrato per i più piccoli, dove ogni mostro nasconde una piccola gentilezza. Trentatré creature, trentatré modi di guardare la paura negli occhi e scoprire che sorride.\n\nUn albo da leggere ad alta voce, prima di dormire, quando le ombre sembrano più grandi del solito.',
-      en: 'An illustrated bestiary for little ones, where every monster hides a small kindness. Thirty-three creatures, thirty-three ways to look fear in the eye and find it smiling.\n\nA picture book to read aloud at bedtime, when the shadows seem larger than usual.',
-    },
-    bio: {
-      it: 'Sara Conti illustra e scrive libri per bambini da oltre dieci anni. Vive in Liguria con due gatti e troppe matite.',
-      en: "Sara Conti has been writing and illustrating children's books for over ten years. She lives in Liguria with two cats and too many pencils.",
-    },
-  },
-  {
-    id: 'abc-degli-animali',
-    title:    { it: 'ABC degli Animali', en: 'An Animal ABC' },
-    subtitle: { it: 'Un alfabeto da sfogliare', en: 'An alphabet to leaf through' },
-    author: 'Marta Lenzi',
-    category: 'libri-per-bambini',
-    price: 16.0,
-    cover: '/covers/abc-degli-animali.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 48, isbn: 'TBD', format: 'Hardcover', year: 2023, featured: false,
-    description: {
-      it: 'Dalla A di Aquila alla Z di Zebra: ventisei animali, ventisei tavole a piena pagina per imparare le lettere e i versi del mondo.',
-      en: 'From A for Aquila to Z for Zebra: twenty-six animals, twenty-six full-page plates to learn letters and the sounds of the world.',
-    },
-    bio: {
-      it: 'Marta Lenzi è grafica e autrice. ABC degli Animali è il suo secondo albo per Nava.',
-      en: 'Marta Lenzi is a designer and author. An Animal ABC is her second picture book for Nava.',
-    },
-  },
-  {
-    id: 'ridere-sul-serio',
-    title:    { it: 'Ridere sul Serio', en: 'Serious Laughs' },
-    subtitle: { it: "Piccolo manuale dell'umorismo", en: 'A small manual of humor' },
-    author: 'Gianni Po',
-    category: 'humor-e-regali',
-    price: 14.9,
-    cover: '/covers/ridere-sul-serio.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 160, isbn: 'TBD', format: 'Paperback', year: 2024, featured: true,
-    description: {
-      it: 'Una raccolta di pezzi brevi sul perché ridiamo, e di cosa. Il regalo giusto per chi prende tutto troppo sul serio — o per chi non lo prende abbastanza.',
-      en: "A collection of short pieces on why we laugh, and at what. The right gift for someone who takes everything too seriously — or not seriously enough.",
-    },
-    bio: {
-      it: 'Gianni Po scrive di comicità per giornali e radio. È meno divertente di persona, dice lui.',
-      en: "Gianni Po writes about comedy for newspapers and radio. He's less funny in person, he says.",
-    },
-  },
-  {
-    id: 'codice-e-caos',
-    title:    { it: 'Codice e Caos', en: 'Code & Chaos' },
-    subtitle: { it: 'Vivere (bene) con il software', en: 'Living (well) with software' },
-    author: 'Marco Ferretti',
-    category: 'informatica-web-digital',
-    price: 29.0,
-    cover: '/covers/codice-e-caos.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 288, isbn: 'TBD', format: 'Paperback', year: 2025, featured: true,
-    description: {
-      it: "Perché il software ci sembra sempre sul punto di rompersi? Un saggio limpido sull'entropia digitale, scritto per chi programma e per chi deve solo conviverci.\n\nDodici capitoli, nessuna formula spaventosa.",
-      en: 'Why does software always feel one step from breaking? A clear essay on digital entropy, written for those who code and those who just have to live with it.\n\nTwelve chapters, no scary formulas.',
-    },
-    bio: {
-      it: "Marco Ferretti è ingegnere del software e divulgatore. Ha lavorato vent'anni in sistemi che non dovevano mai cadere.",
-      en: 'Marco Ferretti is a software engineer and writer. He spent twenty years on systems that were never supposed to go down.',
-    },
-  },
-  {
-    id: 'il-denaro-lento',
-    title:    { it: 'Il Denaro Lento', en: 'Slow Money' },
-    subtitle: { it: 'Una finanza che ha pazienza', en: 'Finance that has patience' },
-    author: 'Anna Greco',
-    category: 'affari-e-finanza',
-    price: 24.0,
-    cover: '/covers/il-denaro-lento.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 224, isbn: 'TBD', format: 'Paperback', year: 2024, featured: true,
-    description: {
-      it: 'Contro la fretta dei mercati, un elogio del tempo lungo. Come pensano gli investitori che non hanno fretta — e perché spesso hanno ragione.',
-      en: "Against the rush of the markets, a praise of the long horizon. How investors who aren't in a hurry think — and why they're often right.",
-    },
-    bio: {
-      it: 'Anna Greco è analista finanziaria e columnist. Scrive di soldi senza promettere scorciatoie.',
-      en: 'Anna Greco is a financial analyst and columnist. She writes about money without promising shortcuts.',
-    },
-  },
-  {
-    id: 'startup-da-cucina',
-    title:    { it: 'Startup da Cucina', en: 'Kitchen-Table Startup' },
-    subtitle: { it: 'Costruire in piccolo, durare a lungo', en: 'Build small, last long' },
-    author: 'Paolo Mari',
-    category: 'affari-e-finanza',
-    price: 27.0,
-    cover: '/covers/startup-da-cucina.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 240, isbn: 'TBD', format: 'Paperback', year: 2023, featured: false,
-    description: {
-      it: 'Non tutte le imprese hanno bisogno di milioni e di un garage in California. Storie di aziende nate al tavolo di cucina e cresciute con i piedi per terra.',
-      en: 'Not every company needs millions and a garage in California. Stories of businesses born at the kitchen table and grown with both feet on the ground.',
-    },
-    bio: {
-      it: 'Paolo Mari ha fondato due piccole imprese e venduto solo la seconda. Insegna imprenditorialità.',
-      en: 'Paolo Mari founded two small companies and sold only the second. He teaches entrepreneurship.',
-    },
-  },
-  {
-    id: 'cucina-nonna-elide',
-    title:    { it: 'La Cucina di Nonna Elide', en: "Grandma Elide's Kitchen" },
-    subtitle: { it: 'Ottanta ricette di casa', en: 'Eighty home recipes' },
-    author: 'Elide Bianchi',
+    id: 'le-dritte-in-cucina',
+    lang: 'it',
+    work: 'le-dritte-1',
+    title: 'Le Dritte. In cucina',
+    subtitle: '100 cose che nessuno ti dice ai fornelli',
+    series: 'Le Dritte, 1',
+    author: 'Nava Editore',
     category: 'cookbook',
-    price: 32.0,
-    cover: '/covers/cucina-nonna-elide.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 256, isbn: 'TBD', format: 'Hardcover', year: 2024, featured: true,
-    description: {
-      it: "Ottanta ricette raccolte in una cucina di campagna emiliana, con le dosi 'a occhio' tradotte per chi a occhio non ci riesce. Fotografie di stagione e qualche storia di famiglia tra una pagina e l'altra.",
-      en: "Eighty recipes gathered in an Emilian country kitchen, with the 'eyeball it' measures translated for those who can't. Seasonal photography and a few family stories between the pages.",
-    },
-    bio: {
-      it: 'Elide Bianchi ha cucinato per tre generazioni. Questo è il suo primo, e dice ultimo, libro.',
-      en: 'Elide Bianchi has cooked for three generations. This is her first, and she says last, book.',
-    },
+    prices: PRICES_DRITTE,
+    stripe: stripeIds('le-dritte-in-cucina'),
+    files: bookFiles('le-dritte-in-cucina', 'it', 'v1.0'),
+    cover: '/covers/le-dritte-in-cucina.jpg',
+    pages: 119,
+    year: 2026,
+    featured: true,
+    lead: "Perché il sale va messo quando l'acqua bolle? E perché non per il motivo che pensi?",
+    description: [
+      'Cento dritte brevi per capire cosa succede davvero ai fornelli. Ognuna spiega il perché in poche righe e chiude con cosa fare, con grammi, gradi e minuti precisi.',
+    ],
+    highlights: [
+      'Pasta, riso e acqua di cottura',
+      "Frittura: quando l'extravergine va bene, a che temperatura, quante volte si riusa l'olio",
+      "Carne e pesce: perché la bistecca al sangue è sicura e l'hamburger no, 96 ore di congelatore per il pesce crudo",
+      'Uova, verdure, legumi, pane e dolci',
+      'Frigo, congelatore, avanzi e scadenze',
+      'Coltelli, padelle, forno e induzione',
+    ],
+    closing: [
+      'Con gli schemi delle temperature al cuore della carne e della frittura, e un indice per parola chiave. Si legge in ordine o aprendo a caso.',
+      'Il primo volume della collana Le Dritte di Nava Editore.',
+    ],
   },
   {
-    id: 'mani-in-pasta',
-    title:    { it: 'Mani in Pasta', en: 'Hands On' },
-    subtitle: { it: 'Riparare, costruire, rimettere a posto', en: 'Repair, build, set right' },
-    author: 'Luca Verdi',
+    id: 'le-dritte-in-the-kitchen',
+    lang: 'en',
+    work: 'le-dritte-1',
+    title: 'Le Dritte. In the Kitchen',
+    subtitle: '100 Things Nobody Tells You at the Stove',
+    series: 'Le Dritte, 1',
+    author: 'Nava Editore',
+    category: 'cookbook',
+    prices: PRICES_DRITTE,
+    stripe: stripeIds('le-dritte-in-the-kitchen'),
+    files: bookFiles('le-dritte-in-the-kitchen', 'en', 'v1.0'),
+    cover: '/covers/le-dritte-in-the-kitchen.jpg',
+    pages: 119,
+    year: 2026,
+    featured: true,
+    lead: 'Why do you salt pasta water only once it boils? And why not for the reason you think?',
+    description: [
+      'One hundred short tips on what really happens at the stove. Each one explains the why in a few lines and ends with what to do, with precise temperatures, weights and times.',
+    ],
+    highlights: [
+      'Pasta, rice and pasta water',
+      'Frying: when extra virgin olive oil works, at what temperature, how often to reuse the oil',
+      "Meat and fish: why a rare steak is safe and a rare burger isn't, and how to freeze fish for raw dishes",
+      'Eggs, vegetables, beans, bread and baking',
+      'Fridge, freezer, leftovers and date labels',
+      'Knives, pans, ovens and induction',
+    ],
+    closing: [
+      'Temperatures in Fahrenheit and Celsius, charts for safe internal temperatures and frying, and a keyword index. Read it in order or open it anywhere.',
+      'The first volume in the Le Dritte series from Nava Editore. Le dritte is Italian for tips.',
+    ],
+  },
+  {
+    id: 'detersivi-fatti-in-casa',
+    lang: 'it',
+    work: 'detersivi',
+    title: 'Detersivi fatti in casa',
+    subtitle: '80 ricette naturali per bucato, cucina, bagno e ogni superficie',
+    author: 'Nava Editore',
     category: 'fai-da-te',
-    price: 22.0,
-    cover: '/covers/mani-in-pasta.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 192, isbn: 'TBD', format: 'Paperback', year: 2023, featured: false,
-    description: {
-      it: 'Quaranta progetti per la casa, dal più semplice al quasi-impegnativo. Strumenti, materiali e il coraggio di aprire quel cassetto rotto da anni.',
-      en: "Forty projects for the home, from the simplest to the almost-demanding. Tools, materials, and the courage to open that drawer that's been broken for years.",
-    },
-    bio: {
-      it: 'Luca Verdi è falegname e youtuber del fai-da-te. Ha più cacciaviti che amici, e va bene così.',
-      en: "Luca Verdi is a carpenter and DIY youtuber. He has more screwdrivers than friends, and that's fine.",
-    },
+    prices: PRICES_DETERSIVI,
+    stripe: stripeIds('detersivi-fatti-in-casa'),
+    files: bookFiles('detersivi-fatti-in-casa', 'it', 'v1.0'),
+    cover: '/covers/detersivi-fatti-in-casa.jpg',
+    pages: 105,
+    year: 2026,
+    featured: true,
+    lead: 'Ottanta ricette per pulire tutta la casa con dieci ingredienti.',
+    description: [
+      'Acido citrico, bicarbonato, percarbonato, soda Solvay, sapone di Marsiglia: sai cosa usi, quanto e dove.',
+      "Ogni ricetta ha dosi in grammi, passaggi numerati, l'elenco delle superfici su cui usarla e di quelle da evitare, e le avvertenze di sicurezza.",
+    ],
+    highlights: [
+      'Bucato: detersivi, ammorbidente, smacchiatori per sangue, vino, erba e aloni gialli',
+      'Cucina: sgrassatori, forno, cappa, bollitore, taglieri',
+      'Piatti e lavastoviglie, con il test per capire se i bicchieri opachi hanno calcare o corrosione',
+      'Bagno: anticalcare, fughe, muffa sul silicone, scarichi',
+      'Pavimenti, vetri, legno, metalli e profumi per la casa',
+    ],
+    closing: [
+      "Con le regole che nessuno ti spiega: la tabella di cosa non mescolare mai, perché aceto e bicarbonato insieme non puliscono, perché in questo libro non c'è il borace e quando un prodotto commerciale lavora meglio.",
+    ],
   },
   {
-    id: 'note-di-margine',
-    title:    { it: 'Note di Margine', en: 'Margin Notes' },
-    subtitle: { it: 'Graphic novel', en: 'A graphic novel' },
-    author: 'Davide Riva',
-    category: 'graphic-novel-fumetti',
-    price: 26.0,
-    cover: '/covers/note-di-margine.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 208, isbn: 'TBD', format: 'Paperback', year: 2025, featured: true,
-    description: {
-      it: 'Un libraio antiquario trova messaggi scritti ai margini dei libri usati e comincia a rispondere. Un romanzo a fumetti sulla solitudine e sulle parole che restano.',
-      en: 'An antiquarian bookseller finds messages written in the margins of used books and starts to reply. A graphic novel about loneliness and the words that stay behind.',
-    },
-    bio: {
-      it: 'Davide Riva è fumettista. Disegna a inchiostro e scrive a matita, mai il contrario.',
-      en: 'Davide Riva is a cartoonist. He draws in ink and writes in pencil, never the other way around.',
-    },
-  },
-  {
-    id: 'fumetti-di-mezzanotte',
-    title:    { it: 'Fumetti di Mezzanotte', en: 'Midnight Comics' },
-    subtitle: { it: 'Otto storie brevi', en: 'Eight short stories' },
-    author: 'Iris Galli',
-    category: 'graphic-novel-fumetti',
-    price: 23.0,
-    cover: '/covers/fumetti-di-mezzanotte.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 176, isbn: 'TBD', format: 'Paperback', year: 2024, featured: false,
-    description: {
-      it: 'Otto racconti a fumetti che accadono tutti dopo la mezzanotte, quando le città cambiano regole. Antologia in bianco, nero e un solo rosso.',
-      en: 'Eight comic stories that all happen after midnight, when cities change their rules. An anthology in black, white, and a single red.',
-    },
-    bio: {
-      it: 'Iris Galli è autrice e serigrafa. Lavora solo di notte, per coerenza.',
-      en: 'Iris Galli is an author and screen-printer. She works only at night, for consistency.',
-    },
-  },
-  {
-    id: 'pillole-di-filosofia',
-    title:    { it: 'Pillole di Filosofia', en: 'Philosophy in a Nutshell' },
-    subtitle: { it: 'Grandi idee in poche pagine', en: 'Big ideas in a few pages' },
-    author: 'Elena Russo',
-    category: 'pillole-di',
-    price: 12.0,
-    cover: '/covers/pillole-di-filosofia.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 96, isbn: 'TBD', format: 'Paperback', year: 2025, featured: false,
-    description: {
-      it: 'Venti filosofi, venti idee, due pagine ciascuno. Per chi vuole capire di cosa si parla senza iscriversi a un corso triennale.',
-      en: 'Twenty philosophers, twenty ideas, two pages each. For anyone who wants to follow the conversation without signing up for a three-year degree.',
-    },
-    bio: {
-      it: 'Elena Russo insegna storia della filosofia e detesta le semplificazioni — tranne quando funzionano.',
-      en: 'Elena Russo teaches the history of philosophy and hates oversimplification — except when it works.',
-    },
-  },
-  {
-    id: 'weekend-lenti',
-    title:    { it: 'Weekend Lenti', en: 'Slow Weekends' },
-    subtitle: { it: 'Microavventure a due passi da casa', en: 'Microadventures close to home' },
-    author: 'Chiara Sole',
-    category: 'tempo-libero-lifestyle',
-    price: 21.0,
-    cover: '/covers/weekend-lenti.svg',
-    stripeLink: 'STRIPE_LINK_TBD',
-    amazonLink: 'AMAZON_LINK_TBD',
-    pages: 184, isbn: 'TBD', format: 'Paperback', year: 2024, featured: true,
-    description: {
-      it: 'Cinquanta idee per fermarsi senza andare lontano: sentieri, borghi, terme, librerie di paese. Il lusso, qui, è il tempo.',
-      en: 'Fifty ideas for slowing down without going far: trails, villages, hot springs, small-town bookshops. The luxury here is time.',
-    },
-    bio: {
-      it: 'Chiara Sole scrive di viaggi lenti e cammini. Possiede una sola valigia, piccola.',
-      en: 'Chiara Sole writes about slow travel and walking routes. She owns a single, small suitcase.',
-    },
+    id: 'homemade-cleaning-products',
+    lang: 'en',
+    work: 'detersivi',
+    title: 'Homemade Cleaning Products',
+    subtitle: '80 Natural Recipes for Laundry, Kitchen, Bathroom and Every Surface',
+    author: 'Nava Editore',
+    category: 'fai-da-te',
+    prices: PRICES_DETERSIVI,
+    stripe: stripeIds('homemade-cleaning-products'),
+    files: bookFiles('homemade-cleaning-products', 'en', 'v1.0'),
+    cover: '/covers/homemade-cleaning-products.jpg',
+    pages: 105,
+    year: 2026,
+    featured: true,
+    lead: 'Eighty recipes to clean your whole home with ten ingredients.',
+    description: [
+      'Citric acid, baking soda, washing soda, sodium percarbonate, castile soap: you know what you use, how much and where.',
+      'Every recipe has doses in grams, numbered steps, the surfaces to use it on and the ones to avoid, and the safety cautions. Written for US and UK readers, including the difference between washing soda and UK soda crystals.',
+    ],
+    highlights: [
+      'Laundry: detergents, fabric softener, stain removers for blood, wine, grass and yellow underarm stains',
+      'Kitchen: degreasers, oven, range hood, kettle, cutting boards',
+      'Dishes and dishwasher, with the test that tells you whether cloudy glasses have limescale or etching',
+      'Bathroom: limescale, grout, mold on silicone, slow drains',
+      'Floors, glass, wood, metals and home fragrance',
+    ],
+    closing: [
+      "With the rules nobody explains: the chart of what never to mix, why vinegar and baking soda together don't clean, why this book has no borax, and when a store-bought product works better.",
+    ],
   },
 ];
 
@@ -370,19 +301,41 @@ export function categoryLabel(slug: CategorySlug, lang: Lang): string {
   return cat ? cat[lang] : slug;
 }
 
-/** "€ 19,00" — same formatting in both languages (EUR, Italian style). */
-export function formatPrice(price: number): string {
-  return '€ ' + price.toFixed(2).replace('.', ',');
+/** "7,90 €" (it) · "$8.90" / "£7.49" (en). */
+export function formatPrice(amount: number, currency: Currency, lang: Lang): string {
+  return new Intl.NumberFormat(lang === 'it' ? 'it-IT' : 'en-US', { style: 'currency', currency }).format(amount);
 }
 
-/** Products of a category, newest first. */
-export function byCategory(slug: CategorySlug): Product[] {
-  return products.filter((p) => p.category === slug);
+/** Editions sold on the pages of a language. */
+export function productsFor(lang: Lang): Product[] {
+  return products.filter((p) => p.lang === lang);
 }
 
-/** Related products: same category first, then the rest (newest first). */
+/** Lookup by slug (used by the Netlify Functions). */
+export function productById(id: string): Product | undefined {
+  return products.find((p) => p.id === id);
+}
+
+/** The edition of the same book in another language, if it exists. */
+export function sibling(product: Product, lang: Lang): Product | undefined {
+  return products.find((p) => p.work === product.work && p.lang === lang);
+}
+
+/** Categories with at least one edition: empty ones are hidden from the site. */
+export function activeCategories(lang: Lang) {
+  const used = new Set(productsFor(lang).map((p) => p.category));
+  return CATEGORIES.filter((c) => used.has(c.slug));
+}
+
+/** Editions of a category in a language, newest first. */
+export function byCategory(slug: CategorySlug, lang: Lang): Product[] {
+  return productsFor(lang).filter((p) => p.category === slug);
+}
+
+/** Related editions in the same language: same category first. */
 export function related(product: Product, count = 3): Product[] {
-  const same = products.filter((p) => p.category === product.category && p.id !== product.id);
-  const rest = products.filter((p) => p.category !== product.category && p.id !== product.id);
+  const pool = productsFor(product.lang).filter((p) => p.id !== product.id);
+  const same = pool.filter((p) => p.category === product.category);
+  const rest = pool.filter((p) => p.category !== product.category);
   return [...same, ...rest].slice(0, count);
 }
