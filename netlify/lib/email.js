@@ -84,6 +84,10 @@ export function deliveryEmail({ lang, title, link, expires, orderRef, amount, cu
 export async function sendEmail({ to, subject, text, html, idempotencyKey }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new Error('RESEND_API_KEY is not set');
+  // No default sender in code: Netlify's secret scanning fails the build if
+  // a secret env var's value (MAIL_FROM is stored as one) appears in a file.
+  const from = process.env.MAIL_FROM;
+  if (!from) throw new Error('MAIL_FROM is not set');
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -93,7 +97,7 @@ export async function sendEmail({ to, subject, text, html, idempotencyKey }) {
       'Idempotency-Key': idempotencyKey,
     },
     body: JSON.stringify({
-      from: process.env.MAIL_FROM || 'Nava Editore <onboarding@resend.dev>',
+      from,
       to: [to],
       reply_to: 'info@navaeditore.com',
       subject,
