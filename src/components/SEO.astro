@@ -5,7 +5,7 @@
  * JSON-LD <script type="application/ld+json"> blocks are data, not
  * executable script, so they are not affected by the strict CSP.
  */
-import { LANGUAGES, DEFAULT_LANG, switchLangPath, type Lang } from '../i18n';
+import { LANGUAGES, DEFAULT_LANG, switchLangPath, type Alternates, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -17,6 +17,8 @@ interface Props {
   noindex?: boolean;
   /** JSON-LD payloads (Organization, Book, BreadcrumbList, …). */
   jsonLd?: object[];
+  /** Per-language paths when slugs differ; only listed languages get hreflang. */
+  alternates?: Alternates;
 }
 
 const {
@@ -27,17 +29,19 @@ const {
   ogImage = '/og-default.png',
   noindex = false,
   jsonLd = [],
+  alternates: explicit,
 } = Astro.props;
 
 const site = Astro.site!;
 const pathname = Astro.url.pathname;
 const canonical = new URL(pathname, site).href;
 const ogImageAbs = new URL(ogImage, site).href;
-const alternates = LANGUAGES.map((l) => ({
+const paths: Alternates = explicit ?? Object.fromEntries(LANGUAGES.map((l) => [l, switchLangPath(pathname, l)]));
+const alternates = LANGUAGES.filter((l) => paths[l]).map((l) => ({
   lang: l,
-  href: new URL(switchLangPath(pathname, l), site).href,
+  href: new URL(paths[l]!, site).href,
 }));
-const xDefault = new URL(switchLangPath(pathname, DEFAULT_LANG), site).href;
+const xDefault = new URL(paths[DEFAULT_LANG] ?? pathname, site).href;
 ---
 
 <title>{title}</title>

@@ -8,12 +8,12 @@
 import Base from '../../../layouts/Base.astro';
 import BookCard from '../../../components/BookCard.astro';
 import CategoryIcon from '../../../components/CategoryIcon.astro';
-import { CATEGORIES, byCategory } from '../../../data/books';
+import { CATEGORIES, activeCategories, byCategory } from '../../../data/books';
 import { LANGUAGES, localePath, useTranslations, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
   return LANGUAGES.flatMap((lang) =>
-    CATEGORIES.map((category) => ({ params: { lang, slug: category.slug }, props: { category } }))
+    activeCategories(lang).map((category) => ({ params: { lang, slug: category.slug }, props: { category } }))
   );
 }
 
@@ -23,8 +23,8 @@ const t = useTranslations(lang);
 
 const name = category[lang];
 const description = category.desc[lang];
-const items = byCategory(category.slug).sort((a, b) => b.year - a.year);
-const others = CATEGORIES.filter((c) => c.slug !== category.slug);
+const items = byCategory(category.slug, lang).sort((a, b) => b.year - a.year);
+const others = activeCategories(lang).filter((c) => c.slug !== category.slug);
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 
 const jsonLd = [

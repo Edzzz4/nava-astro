@@ -1,45 +1,77 @@
 ---
-/** Privacy policy — structural placeholder, NOT legal advice. */
+/**
+ * Privacy notice: ebook sales (Stripe), delivery (Resend, Netlify Blobs),
+ * contact form (Netlify Forms), hosting (Netlify).
+ * DRAFT to be validated by a person — NOT legal advice.
+ */
 import Legal from '../../../layouts/Legal.astro';
-import { LANGUAGES, type Lang } from '../../../i18n';
+import { COMPANY } from '../../../data/company';
+import { LANGUAGES, localePath, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
   return LANGUAGES.map((lang) => ({ params: { lang } }));
 }
 const lang = Astro.params.lang as Lang;
+const C = COMPANY;
 ---
 
-<Legal {lang} title="Privacy Policy" description="Informativa sul trattamento dei dati personali di Nava.">
+<Legal {lang} title="Privacy Policy" description="Come Nava tratta i dati personali: acquisti, consegna degli ebook, modulo contatti, fornitori e diritti.">
   <h2>1. Titolare del trattamento</h2>
   <p>
-    Il titolare del trattamento è [TODO: ragione sociale], con sede in [TODO: indirizzo],
-    P.IVA [TODO: P.IVA], email <a href="mailto:info@navaeditore.com">info@navaeditore.com</a>.
+    {C.legalName}, {C.address}, {C.country.it}, KvK {C.kvk}. Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
   </p>
 
-  <h2>2. Dati trattati</h2>
+  <h2>2. Quali dati trattiamo e perché</h2>
+  <ul>
+    <li>
+      <strong>Acquisto.</strong> Email, nome, paese e indirizzo di fatturazione, dati di pagamento (i dati
+      della carta li tratta solo Stripe). Servono a concludere il contratto, calcolare le imposte e tenere
+      la contabilità. Base giuridica: contratto (art. 6.1.b GDPR) e obbligo legale (art. 6.1.c).
+    </li>
+    <li>
+      <strong>Consegna.</strong> L'email, usata per inviarti il link di download. Teniamo anche un registro
+      dell'ordine con libro, data, scadenza del link, numero di download e consenso alla consegna
+      immediata; il registro non contiene la tua email. Servono a consegnare l'ebook e a limitare gli abusi
+      del link. Base giuridica: contratto (art. 6.1.b) e interesse legittimo (art. 6.1.f).
+    </li>
+    <li>
+      <strong>Modulo contatti.</strong> Nome, email e messaggio, per risponderti. Base giuridica: misure
+      precontrattuali o interesse legittimo.
+    </li>
+    <li>
+      <strong>Visita al sito.</strong> Dati tecnici nei log del server, come l'indirizzo IP, per sicurezza e
+      funzionamento. Base giuridica: interesse legittimo (art. 6.1.f).
+    </li>
+  </ul>
+
+  <h2>3. A chi affidiamo i dati</h2>
+  <ul>
+    <li><strong>Stripe</strong>: pagamenti e calcolo delle imposte. Per alcuni trattamenti Stripe agisce come titolare autonomo, secondo la propria informativa.</li>
+    <li><strong>Netlify</strong>: hosting del sito, funzioni di pagamento e download, archivio dei file e del registro ordini, modulo contatti.</li>
+    <li><strong>Resend</strong>: invio dell'email con il link di download.</li>
+  </ul>
   <p>
-    Il sito è statico e non utilizza cookie di profilazione né strumenti di analytics.
-    I dati personali trattati sono esclusivamente quelli forniti volontariamente tramite
-    il modulo di contatto o via email: nome, indirizzo email e contenuto del messaggio.
+    Questi fornitori possono trattare dati fuori dallo Spazio economico europeo, in particolare negli
+    Stati Uniti, con le garanzie previste dal GDPR: [TODO: clausole contrattuali tipo o EU-US Data Privacy
+    Framework, da verificare per ciascun fornitore].
   </p>
-  <!-- NOTA: se in futuro si aggiunge analytics o qualunque cookie non tecnico,
-       serve un banner di consenso GDPR e questa informativa va aggiornata. -->
 
-  <h2>3. Finalità e base giuridica</h2>
+  <h2>4. Per quanto tempo</h2>
+  <ul>
+    <li>Dati contabili e fiscali dell'ordine: 7 anni, come richiesto dalla legge fiscale olandese.</li>
+    <li>Registro dei download: [TODO: es. 12 mesi].</li>
+    <li>Messaggi dal modulo contatti: [TODO: es. 24 mesi].</li>
+  </ul>
+
+  <h2>5. I tuoi diritti</h2>
   <p>
-    I dati sono trattati per rispondere alle richieste ricevute (art. 6.1.b GDPR) e per
-    l'invio della newsletter, previo consenso esplicito (art. 6.1.a GDPR). [TODO: verificare
-    con un consulente le finalità effettive.]
+    Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione scrivendo a <a href={`mailto:${C.email}`}>{C.email}</a>. Puoi presentare reclamo all'Autoriteit Persoonsgegevens,
+    l'autorità olandese per la protezione dei dati, o all'autorità del paese in cui vivi.
   </p>
 
-  <h2>4. Conservazione</h2>
-  <p>[TODO: indicare i tempi di conservazione dei dati.]</p>
-
-  <h2>5. Diritti dell'interessato</h2>
+  <h2>6. Cookie e newsletter</h2>
   <p>
-    In ogni momento è possibile esercitare i diritti di cui agli artt. 15-22 GDPR (accesso,
-    rettifica, cancellazione, limitazione, portabilità, opposizione) scrivendo a
-    <a href="mailto:info@navaeditore.com">info@navaeditore.com</a>. È inoltre possibile
-    proporre reclamo al Garante per la protezione dei dati personali.
+    Il sito non usa cookie: vedi la <a href={localePath(lang, 'legale/cookie-policy/')}>Cookie Policy</a>.
+    Oggi non inviamo newsletter. Se la attiveremo, chiederemo un consenso separato.
   </p>
 </Legal>

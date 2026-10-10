@@ -10,7 +10,7 @@ export const it = {
   /* meta */
   site_name: 'Nava',
   meta_home_title: 'Nava — Libri che valgono la libreria',
-  meta_home_desc: 'Nava, editore indipendente. Catalogo curato, ogni libro un oggetto da regalo, stampato in Italia.',
+  meta_home_desc: 'Nava, editore indipendente. Ebook curati in PDF ed EPUB, da scaricare subito.',
   meta_catalog_title: 'Catalogo — Nava',
   meta_catalog_desc: 'Il catalogo completo Nava: filtra per categoria, cerca e ordina tutti i titoli.',
   meta_about_title: 'Chi siamo — Nava',
@@ -30,12 +30,12 @@ export const it = {
 
   /* nav + footer */
   nav_home: 'Home', nav_catalog: 'Catalogo', nav_about: 'Chi siamo', nav_contact: 'Contatti',
-  foot_tag: 'Libri che valgono la libreria. Editore indipendente, stampato in Italia.',
+  foot_tag: 'Libri che valgono la libreria. Editore indipendente.',
   foot_catalog: 'Catalogo', foot_about: 'Chi siamo', foot_contact: 'Contatti',
   foot_privacy: 'Privacy', foot_cookies: 'Cookie Policy', foot_terms: 'Termini di vendita',
-  foot_withdrawal: 'Diritto di recesso', foot_shipping: 'Spedizioni e resi',
+  foot_withdrawal: 'Diritto di recesso', foot_shipping: 'Consegna digitale',
   foot_rights: 'Tutti i diritti riservati.',
-  foot_vat: 'P.IVA [TODO]',
+  foot_vat: 'BTW', foot_kvk: 'KvK',
 
   /* shared buy buttons */
   buy_now: 'Compra ora', buy_amazon: 'Compra su Amazon',
@@ -44,18 +44,18 @@ export const it = {
   /* home */
   hero_kicker: 'Editore indipendente · dal 2019',
   hero_line1: 'Libri che valgono', hero_line2: 'la libreria.',
-  hero_sub: 'Un catalogo curato, libro per libro. Ogni titolo stampato in Italia e pensato come un oggetto da tenere — o da regalare.',
+  hero_sub: 'Un catalogo curato, libro per libro. Ebook in PDF ed EPUB: li scarichi subito e li leggi dove vuoi.',
   hero_cta1: 'Esplora catalogo', hero_cta2: 'Ultime uscite',
-  cat_title: 'Indice categorie', cat_sub: 'Nove modi di entrare nel catalogo.',
+  cat_title: 'Indice categorie', cat_sub: 'I nostri libri, per argomento.',
   cat_count_word: 'titoli',
-  feat_title: 'Ultime uscite', feat_sub: 'Selezione della stagione, stampata in Italia.',
+  feat_title: 'Ultime uscite', feat_sub: 'Gli ultimi libri usciti.',
   feat_viewall: 'Vedi tutto il catalogo',
   shelf_title: 'Lo scaffale', shelf_sub: 'Tutto il catalogo, dorso a dorso. Sfila un libro.',
   why_title: 'Perché Nava',
   why1_h: 'Catalogo curato', why1_p: 'Pochi titoli, scelti uno per uno. Nessun riempitivo: se è in catalogo, vale lo scaffale.',
   why2_h: 'Indipendente', why2_p: 'Nessun grande gruppo dietro di noi. Decidiamo cosa pubblicare in base ai libri, non ai trend.',
-  why3_h: 'Stampato in Italia', why3_p: 'Carta, rilegatura e stampa di qualità da tipografie italiane. Oggetti fatti per durare.',
-  nl_title: 'Resta in catalogo.', nl_sub: 'Una mail al mese: nuove uscite, ristampe, niente rumore.',
+  why3_h: 'Subito tuo', why3_p: 'PDF ed EPUB senza DRM, da scaricare appena paghi e leggere su computer, tablet ed e-reader.',
+  nl_title: 'Resta in catalogo.', nl_sub: 'Una mail al mese: nuove uscite e nuove edizioni, niente rumore.',
   nl_label: 'Indirizzo email', nl_ph: 'La tua email', nl_btn: 'Iscrivimi',
 
   /* catalog */
@@ -79,20 +79,20 @@ export const it = {
   ab_kicker: 'Chi siamo', ab_title: 'Un editore piccolo, di proposito.',
   ab_lead: 'Nava nasce nel 2019 da due lettori testardi convinti che un libro debba valere lo spazio che occupa.',
   ab_story_h: 'La nostra storia',
-  ab_story_p1: 'Abbiamo iniziato in una stanza con due scrivanie e una pila di manoscritti che nessuno voleva. Cercavamo libri che ci sembrassero necessari, non solo vendibili — e li volevamo stampati bene, su carta che dura.',
+  ab_story_p1: 'Abbiamo iniziato in una stanza con due scrivanie e una pila di manoscritti che nessuno voleva. Cercavamo libri che ci sembrassero necessari, non solo vendibili — e li volevamo fatti bene: chiari, precisi, da usare davvero.',
   ab_story_p2: "Oggi pubblichiamo poche decine di titoli l'anno, in nove collane. Continuiamo a leggere ogni manoscritto fino in fondo, e a dire di no quasi sempre. È così che il catalogo resta curato.",
   ab_mission_h: 'La nostra missione',
-  ab_mission_p: 'Pubblicare meno, ma meglio. Trattare ogni libro come un oggetto da regalo: bello da tenere in mano, fatto per restare sullo scaffale.',
+  ab_mission_p: 'Pubblicare meno, ma meglio. Libri pratici e chiari, con ogni dato al suo posto.',
   ab_team_h: 'Le persone', ab_team_sub: 'Due soci, nessun reparto marketing.',
   ab_team_photo_ph: 'Foto del duo in arrivo',
   ed_name: 'Edoardo', ed_role: 'Co-fondatore · Direzione editoriale',
   ed_bio: "Sceglie i titoli, segue gli autori e legge troppo tardi la sera. Prima di Nava ha lavorato dieci anni nell'editoria di varia.",
   lu_name: 'Luca', lu_role: 'Co-fondatore · Produzione e design',
-  lu_bio: 'Cura carta, stampa e copertine. Ex tipografo, è convinto che il bianco di una pagina conti quanto il testo.',
+  lu_bio: '[TODO: ruolo e storia reali]',
   ab_values_h: 'Cosa teniamo fermo',
   v1_h: 'Curare, non accumulare', v1_p: 'Meglio dieci libri giusti che cento qualsiasi.',
   v2_h: 'Indipendenza', v2_p: 'Nessun azionista a cui rispondere se non i lettori.',
-  v3_h: 'Fatto in Italia', v3_p: 'Stampa e rilegatura da tipografie che conosciamo per nome.',
+  v3_h: 'Dati controllati', v3_p: 'Temperature, dosi e avvertenze verificate su fonti ufficiali.',
 
   /* contact */
   ct_kicker: 'Contatti', ct_title: 'Scrivici.',
@@ -111,6 +111,37 @@ export const it = {
   /* legal */
   legal_updated: 'Ultimo aggiornamento',
   legal_en_note: 'Questa pagina è disponibile solo in italiano per ora.',
+
+  /* ebook sales: product page */
+  bk_series: 'Collana', bk_lang: 'Lingua', bk_lang_value: 'Italiano',
+  bk_pages_pdf: 'Pagine (PDF)', bk_format_value: 'Ebook: PDF + EPUB',
+  bk_other_edition: 'Disponibile anche in inglese:',
+  bk_currency: 'Valuta',
+  price_incl_tax: 'IVA inclusa',
+  price_excl_tax: 'Tasse escluse, calcolate al pagamento',
+  bk_delivery: "Dopo il pagamento ricevi subito un'email con il link per scaricare il PDF e l'EPUB.",
+  bk_noscript: 'Per acquistare serve JavaScript attivo nel browser.',
+  bk_uk_note: 'Sei nel Regno Unito? Per ora la vendita diretta non è disponibile: trovi l\'ebook su Amazon.',
+  buy_loading: 'Apro il pagamento…',
+  buy_error: 'Non è stato possibile aprire il pagamento. Riprova tra poco o scrivi a info@navaeditore.com.',
+  card_details: 'Scopri il libro',
+
+  /* ebook sales: thank-you page */
+  ty_meta_title: 'Grazie — Nava', ty_title: "Grazie per l'acquisto.",
+  ty_msg: "Ti abbiamo inviato un'email con il link per scaricare il libro in PDF ed EPUB. Il link vale 72 ore e permette 5 download per ciascun file.",
+  ty_help: "Non trovi l'email dopo qualche minuto? Controlla lo spam o scrivi a info@navaeditore.com con l'indirizzo usato per il pagamento.",
+
+  /* ebook sales: download page */
+  dl_meta_title: 'Scarica il tuo libro — Nava', dl_title: 'Scarica il tuo libro',
+  dl_loading: 'Controllo il link…',
+  dl_expires: 'Il link scade il', dl_remaining: 'download rimasti',
+  dl_pdf: 'Scarica il PDF', dl_epub: "Scarica l'EPUB",
+  dl_pdf_note: 'Per computer e tablet, o da stampare.',
+  dl_epub_note: 'Per e-reader e app di lettura.',
+  dl_err_invalid: "Questo link non è valido. Controlla di averlo copiato per intero dall'email.",
+  dl_err_expired: "Questo link è scaduto: vale 72 ore dall'acquisto. Scrivi a info@navaeditore.com e te ne mandiamo uno nuovo.",
+  dl_err_limit: 'Hai raggiunto il limite di 5 download per questo file. Scrivi a info@navaeditore.com se ti serve ancora.',
+  dl_err_generic: 'Qualcosa non ha funzionato. Riprova tra poco o scrivi a info@navaeditore.com.',
 
   /* 404 */
   nf_title: 'Pagina non trovata.',

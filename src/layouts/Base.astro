@@ -10,7 +10,7 @@ import { ClientRouter } from 'astro:transitions';
 import SEO from '../components/SEO.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { useTranslations, type Lang } from '../i18n';
+import { useTranslations, type Alternates, type Lang } from '../i18n';
 import '../styles/global.css';
 
 interface Props {
@@ -22,9 +22,11 @@ interface Props {
   ogImage?: string;
   noindex?: boolean;
   jsonLd?: object[];
+  /** Per-language paths when slugs differ (ebook editions). */
+  alternates?: Alternates;
 }
 
-const { lang, title, description, active, ogType, ogImage, noindex, jsonLd } = Astro.props;
+const { lang, title, description, active, ogType, ogImage, noindex, jsonLd, alternates } = Astro.props;
 const t = useTranslations(lang);
 ---
 
@@ -43,13 +45,13 @@ const t = useTranslations(lang);
     <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <SEO {lang} {title} {description} {ogType} {ogImage} {noindex} {jsonLd} />
+    <SEO {lang} {title} {description} {ogType} {ogImage} {noindex} {jsonLd} {alternates} />
     <ClientRouter />
   </head>
   <body>
     <a href="#main" class="skip-link">{t('skip_to_content')}</a>
     <header>
-      <Nav {lang} {active} />
+      <Nav {lang} {active} {alternates} />
     </header>
     <main id="main">
       <slot />

@@ -4,6 +4,7 @@
  * Legal pages exist in Italian only for now; the /en/ routes show the
  * Italian text with a notice (see src/pages/[lang]/legale/).
  */
+import { COMPANY } from '../data/company';
 import { localePath, useTranslations, type Lang } from '../i18n';
 
 interface Props {
@@ -24,7 +25,7 @@ const legal = [
   { href: localePath(lang, 'legale/cookie-policy/'), label: t('foot_cookies') },
   { href: localePath(lang, 'legale/termini-di-vendita/'), label: t('foot_terms') },
   { href: localePath(lang, 'legale/recesso/'), label: t('foot_withdrawal') },
-  { href: localePath(lang, 'legale/spedizioni-e-resi/'), label: t('foot_shipping') },
+  { href: localePath(lang, 'legale/consegna/'), label: t('foot_shipping') },
 ];
 ---
 
@@ -56,7 +57,8 @@ const legal = [
   </div>
 
   <p class="container-x colophon text-muted">
-    © {year} Nava Edizioni — [TODO: ragione sociale] · {t('foot_vat')} · {t('foot_rights')}
+    {/* One line on purpose: Astro drops whitespace that contains a line break. */}
+    © {year} {COMPANY.legalName} · {t('foot_kvk')} {COMPANY.kvk} · {t('foot_vat')} {COMPANY.vat} · {COMPANY.address}, {COMPANY.country[lang]} · {t('foot_rights')}
   </p>
 </footer>
 
