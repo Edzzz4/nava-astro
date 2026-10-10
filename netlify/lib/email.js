@@ -1,7 +1,7 @@
 /* Delivery email via the Resend REST API (no SDK needed).
-   MAIL_FROM: "Nava Editore <libri@navaeditore.com>" once the domain is
-   verified on Resend; until then the test sender onboarding@resend.dev,
-   which only delivers to the Resend account's own address.
+   MAIL_FROM: display name + an address on the verified domain
+   navaeditore.com (Resend, verified 2026-10-10). Never write its full
+   value in a repo file: Netlify secret scanning fails the build.
    The email is also the "durable medium" confirmation of the buyer's
    consent to immediate delivery (Directive 2011/83/EU art. 8(7) and
    16(m)): keep the summary + consent + seller lines. */
