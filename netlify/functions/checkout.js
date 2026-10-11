@@ -42,7 +42,7 @@ export default guarded(async (req, context) => {
   // (footer, terms and the delivery email show them to the buyer).
   const production = isProduction(req, context);
   if (production && companyIncomplete()) {
-    console.error('checkout: src/data/company.ts still has [TODO] fields — sales disabled');
+    console.error('checkout: src/data/company.ts has [TODO] fields or no address — sales disabled');
     return json({ error: 'unavailable' }, 503);
   }
 

@@ -2,11 +2,11 @@
 /**
  * Terms of sale for ebooks sold by a Dutch company.
  * DRAFT to be validated by a person — NOT legal advice. Company data comes
- * from src/data/company.ts; the other "[TODO: …]" are decisions still open.
+ * from src/data/company.ts.
  * Linked from the consent checkbox in Stripe Checkout (checkout.js).
  */
 import Legal from '../../../layouts/Legal.astro';
-import { COMPANY } from '../../../data/company';
+import { COMPANY, companyPlace } from '../../../data/company';
 import { LANGUAGES, localePath, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
@@ -19,7 +19,7 @@ const C = COMPANY;
 <Legal {lang} title="Termini di vendita" description="Condizioni di vendita degli ebook Nava: prezzi, pagamento, consegna, recesso e reclami.">
   <h2>1. Chi vende</h2>
   <p>
-    Gli ebook venduti su navaeditore.com sono offerti da {C.legalName}, {C.legalForm}, con sede in {C.address}, {C.country.it}, iscritta alla Camera di commercio olandese (KvK) con il numero {C.kvk},
+    Gli ebook venduti su navaeditore.com sono offerti da {C.legalName}, impresa individuale ({C.legalForm}) che opera con il marchio {C.brand}, con sede {C.address ? `in ${companyPlace('it')}` : 'nei Paesi Bassi'}, iscritta alla Camera di commercio olandese (KvK) con il numero {C.kvk},
     partita IVA {C.vat}. Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
   </p>
 
@@ -34,7 +34,7 @@ const C = COMPANY;
   <p>
     Con l'acquisto ricevi una licenza personale e non esclusiva: puoi leggere l'ebook sui tuoi
     dispositivi e stamparne pagine per uso personale. Non puoi rivendere, condividere pubblicamente o
-    distribuire i file, in tutto o in parte. I diritti d'autore restano a [TODO: titolare dei diritti].
+    distribuire i file, in tutto o in parte. I diritti d'autore restano a {C.legalName}.
   </p>
 
   <h2>4. Prezzi</h2>
@@ -58,7 +58,7 @@ const C = COMPANY;
     Subito dopo il pagamento ricevi un'email con il link per scaricare il PDF e l'EPUB. Il link vale
     72 ore e permette 5 download per ciascun file. Salva i file sul tuo dispositivo. Se il link scade o
     non funziona, scrivi a <a href={`mailto:${C.email}`}>{C.email}</a> e ti mandiamo un nuovo link
-    [TODO: entro quanti giorni, e fino a quando dopo l'acquisto]. Dettagli nella pagina <a href={localePath(lang, 'legale/consegna/')}>Consegna digitale</a>.
+    entro 2 giorni lavorativi, fino a 12 mesi dopo l'acquisto. Dettagli nella pagina <a href={localePath(lang, 'legale/consegna/')}>Consegna digitale</a>.
   </p>
 
   <h2>7. Diritto di recesso</h2>
@@ -78,8 +78,8 @@ const C = COMPANY;
   <h2>9. Legge applicabile e reclami</h2>
   <p>
     Si applica la legge olandese. Se sei un consumatore residente in un altro paese, conservi la
-    protezione delle norme del tuo paese che non si possono derogare per contratto. Per un reclamo scrivi a <a href={`mailto:${C.email}`}>{C.email}</a>: rispondiamo entro [TODO: numero] giorni lavorativi.
-    [TODO: eventuale organismo di risoluzione alternativa delle controversie a cui Nava aderisce.]
+    protezione delle norme del tuo paese che non si possono derogare per contratto. Per un reclamo scrivi a <a href={`mailto:${C.email}`}>{C.email}</a>: rispondiamo entro 14 giorni dal ricevimento. Se serve più tempo, entro 14 giorni ti confermiamo il ricevimento e ti diciamo quando avrai una risposta completa.
+    Nava non aderisce a organismi di risoluzione alternativa delle controversie. Resta sempre possibile rivolgersi al giudice competente.
   </p>
 
   <h2>10. Modifiche</h2>

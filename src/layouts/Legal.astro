@@ -12,11 +12,11 @@ interface Props {
   lang: Lang;
   title: string;
   description: string;
-  /** dd/mm/yyyy or [TODO]. */
+  /** dd/mm/yyyy. */
   updated?: string;
 }
 
-const { lang, title, description, updated = '[TODO: data]' } = Astro.props;
+const { lang, title, description, updated = '11/10/2026' } = Astro.props;
 const t = useTranslations(lang);
 ---
 

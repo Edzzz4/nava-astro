@@ -5,7 +5,7 @@
  * DRAFT to be validated by a person — NOT legal advice.
  */
 import Legal from '../../../layouts/Legal.astro';
-import { COMPANY } from '../../../data/company';
+import { COMPANY, companyPlace } from '../../../data/company';
 import { LANGUAGES, localePath, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
@@ -18,7 +18,7 @@ const C = COMPANY;
 <Legal {lang} title="Privacy Policy" description="Come Nava tratta i dati personali: acquisti, consegna degli ebook, modulo contatti, fornitori e diritti.">
   <h2>1. Titolare del trattamento</h2>
   <p>
-    {C.legalName}, {C.address}, {C.country.it}, KvK {C.kvk}. Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
+    {C.legalName}, {companyPlace('it')}, KvK {C.kvk}. Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
   </p>
 
   <h2>2. Quali dati trattiamo e perché</h2>
@@ -52,15 +52,15 @@ const C = COMPANY;
   </ul>
   <p>
     Questi fornitori possono trattare dati fuori dallo Spazio economico europeo, in particolare negli
-    Stati Uniti, con le garanzie previste dal GDPR: [TODO: clausole contrattuali tipo o EU-US Data Privacy
-    Framework, da verificare per ciascun fornitore].
+    Stati Uniti, con le garanzie previste dal GDPR: le clausole contrattuali tipo approvate dalla Commissione europea
+    e, per i fornitori certificati, l'EU-US Data Privacy Framework.
   </p>
 
   <h2>4. Per quanto tempo</h2>
   <ul>
     <li>Dati contabili e fiscali dell'ordine: 7 anni, come richiesto dalla legge fiscale olandese.</li>
-    <li>Registro dei download: [TODO: es. 12 mesi].</li>
-    <li>Messaggi dal modulo contatti: [TODO: es. 24 mesi].</li>
+    <li>Registro dei download: 12 mesi dall'acquisto.</li>
+    <li>Messaggi dal modulo contatti: 24 mesi.</li>
   </ul>
 
   <h2>5. I tuoi diritti</h2>

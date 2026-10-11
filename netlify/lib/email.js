@@ -61,7 +61,7 @@ export function deliveryEmail({ lang, title, link, expires, orderRef, amount, cu
   const date = when(expires);
   const total = new Intl.NumberFormat(c.locale, { style: 'currency', currency: currency.toUpperCase() }).format(amount / 100);
   const C = COMPANY;
-  const seller = `${c.seller}: ${C.legalName}, ${C.address}, ${C.country[lang] ?? C.country.en} · KvK ${C.kvk} · BTW/VAT ${C.vat}`;
+  const seller = `${c.seller}: ${C.legalName}, ${[C.address, C.country[lang] ?? C.country.en].filter(Boolean).join(', ')} · KvK ${C.kvk} · BTW/VAT ${C.vat}`;
   const termsUrl = `${site}/${lang}/legale/termini-di-vendita/`;
   const text = [
     c.hello(title), '', c.linkIntro, link, '', c.rules(date), '', c.help, '',
