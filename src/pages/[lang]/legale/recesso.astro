@@ -6,7 +6,7 @@
  * collected in Stripe Checkout, confirmation in the delivery email.
  */
 import Legal from '../../../layouts/Legal.astro';
-import { COMPANY, companyPlace } from '../../../data/company';
+import { COMPANY, companyPlace, sellerName } from '../../../data/company';
 import { LANGUAGES, localePath, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
@@ -43,6 +43,6 @@ const C = COMPANY;
 
   <h2>4. Contatti</h2>
   <p>
-    <a href={`mailto:${C.email}`}>{C.email}</a> · {C.legalName}, {companyPlace('it')}.
+    <a href={`mailto:${C.email}`}>{C.email}</a> · {sellerName()}, {companyPlace('it')}.
   </p>
 </Legal>

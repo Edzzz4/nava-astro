@@ -4,7 +4,7 @@
  * Legal pages exist in Italian only for now; the /en/ routes show the
  * Italian text with a notice (see src/pages/[lang]/legale/).
  */
-import { COMPANY, companyPlace } from '../data/company';
+import { COMPANY, companyPlace, sellerName } from '../data/company';
 import { localePath, useTranslations, type Lang } from '../i18n';
 
 interface Props {
@@ -58,7 +58,7 @@ const legal = [
 
   <p class="container-x colophon text-muted">
     {/* One line on purpose: Astro drops whitespace that contains a line break. */}
-    © {year} {COMPANY.legalName} · {t('foot_kvk')} {COMPANY.kvk} · {t('foot_vat')} {COMPANY.vat} · {companyPlace(lang)} · {t('foot_rights')}
+    © {year} {sellerName()}{COMPANY.kvk && ` · ${t('foot_kvk')} ${COMPANY.kvk}`}{COMPANY.vat && ` · ${t('foot_vat')} ${COMPANY.vat}`} · {companyPlace(lang)} · {t('foot_rights')}
   </p>
 </footer>
 

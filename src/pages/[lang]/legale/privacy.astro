@@ -5,7 +5,7 @@
  * DRAFT to be validated by a person — NOT legal advice.
  */
 import Legal from '../../../layouts/Legal.astro';
-import { COMPANY, companyPlace } from '../../../data/company';
+import { COMPANY, companyPlace, sellerName } from '../../../data/company';
 import { LANGUAGES, localePath, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
@@ -18,7 +18,7 @@ const C = COMPANY;
 <Legal {lang} title="Privacy Policy" description="Come Nava tratta i dati personali: acquisti, consegna degli ebook, modulo contatti, fornitori e diritti.">
   <h2>1. Titolare del trattamento</h2>
   <p>
-    {C.legalName}, {companyPlace('it')}, KvK {C.kvk}. Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
+    {sellerName()}, {companyPlace('it')}{C.kvk && `, KvK ${C.kvk}`}. Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
   </p>
 
   <h2>2. Quali dati trattiamo e perché</h2>

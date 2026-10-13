@@ -6,7 +6,7 @@
  * Linked from the consent checkbox in Stripe Checkout (checkout.js).
  */
 import Legal from '../../../layouts/Legal.astro';
-import { COMPANY, companyPlace } from '../../../data/company';
+import { COMPANY, companyPlace, sellerName } from '../../../data/company';
 import { LANGUAGES, localePath, type Lang } from '../../../i18n';
 
 export function getStaticPaths() {
@@ -19,8 +19,8 @@ const C = COMPANY;
 <Legal {lang} title="Termini di vendita" description="Condizioni di vendita degli ebook Nava: prezzi, pagamento, consegna, recesso e reclami.">
   <h2>1. Chi vende</h2>
   <p>
-    Gli ebook venduti su navaeditore.com sono offerti da {C.legalName}, impresa individuale ({C.legalForm}) che opera con il marchio {C.brand}, con sede {C.address ? `in ${companyPlace('it')}` : 'nei Paesi Bassi'}, iscritta alla Camera di commercio olandese (KvK) con il numero {C.kvk},
-    partita IVA {C.vat}. Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
+    Gli ebook venduti su navaeditore.com sono offerti da {C.legalName ? `${C.legalName}, impresa individuale (${C.legalForm}) che opera con il marchio ${C.brand}` : C.brand}, con sede {C.address ? `in ${companyPlace('it')}` : 'nei Paesi Bassi'}{C.kvk && `, iscritta alla Camera di commercio olandese (KvK) con il numero ${C.kvk}`}{C.vat && `, partita IVA ${C.vat}`}.
+    Email: <a href={`mailto:${C.email}`}>{C.email}</a>.
   </p>
 
   <h2>2. Cosa vendiamo</h2>
@@ -34,7 +34,7 @@ const C = COMPANY;
   <p>
     Con l'acquisto ricevi una licenza personale e non esclusiva: puoi leggere l'ebook sui tuoi
     dispositivi e stamparne pagine per uso personale. Non puoi rivendere, condividere pubblicamente o
-    distribuire i file, in tutto o in parte. I diritti d'autore restano a {C.legalName}.
+    distribuire i file, in tutto o in parte. I diritti d'autore restano a {sellerName()}.
   </p>
 
   <h2>4. Prezzi</h2>
